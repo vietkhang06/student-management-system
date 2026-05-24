@@ -2,6 +2,7 @@ package com.demo.student_management.controller;
 
 import com.demo.student_management.dto.hocsinh.HocSinhCreateRequest;
 import com.demo.student_management.dto.hocsinh.HocSinhResponse;
+import com.demo.student_management.security.AuthorizationService;
 import com.demo.student_management.service.HocSinhService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -15,29 +16,56 @@ import java.util.List;
 public class HocSinhController {
 
     private final HocSinhService hocSinhService;
+    private final AuthorizationService authorizationService;
 
     @PostMapping
     public HocSinhResponse create(@RequestBody HocSinhCreateRequest request) {
+        authorizationService.requireAdmin();
         return hocSinhService.create(request);
     }
 
     @GetMapping
     public List<HocSinhResponse> getAll() {
-        return hocSinhService.getAll();
+        List<HocSinhResponse> all = hocSinhService.getAll();
+        if (authorizationService.isBanQuanLy()) {
+            return all;
+        }
+        java.util.Set<String> assignedClassIds = authorizationService.getAssignedClassIdsForCurrentTeacher();
+        return all.stream()
+                .filter(hs -> assignedClassIds.contains(hs.getIdLop()))
+                .toList();
     }
 
     @GetMapping("/{idHocSinh}")
     public HocSinhResponse getById(@PathVariable String idHocSinh) {
-        return hocSinhService.getById(idHocSinh);
+        HocSinhResponse hs = hocSinhService.getById(idHocSinh);
+        if (!authorizationService.isBanQuanLy()) {
+            authorizationService.requireCanAccessClass(hs.getIdLop());
+        }
+        return hs;
     }
 
     @GetMapping("/search")
     public List<HocSinhResponse> search(@RequestParam String ten) {
-        return hocSinhService.searchByName(ten);
+        List<HocSinhResponse> searchResults = hocSinhService.searchByName(ten);
+        if (authorizationService.isBanQuanLy()) {
+            return searchResults;
+        }
+        java.util.Set<String> assignedClassIds = authorizationService.getAssignedClassIdsForCurrentTeacher();
+        return searchResults.stream()
+                .filter(hs -> assignedClassIds.contains(hs.getIdLop()))
+                .toList();
     }
 
     @GetMapping("/summary")
     public List<HocSinhSummaryResponse> getStudentSummaries() {
-        return hocSinhService.getStudentSummaries();
+        List<HocSinhSummaryResponse> summaries = hocSinhService.getStudentSummaries();
+        if (authorizationService.isBanQuanLy()) {
+            return summaries;
+        }
+        java.util.Set<String> assignedClassIds = authorizationService.getAssignedClassIdsForCurrentTeacher();
+        return summaries.stream()
+                .filter(hs -> assignedClassIds.contains(hs.getIdLop()))
+                .toList();
     }
 }

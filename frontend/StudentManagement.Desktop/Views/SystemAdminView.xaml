@@ -1,0 +1,371 @@
+<UserControl x:Class="StudentManagement.Desktop.Views.SystemAdminView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:StudentManagement.Desktop.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="1000"
+             d:DataContext="{d:DesignInstance Type=vm:SystemAdminViewModel}">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolVis"/>
+
+        <!-- Stat Card Border Style -->
+        <Style x:Key="StatCard" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16,14"/>
+            <Setter Property="Margin" Value="0,0,16,0"/>
+        </Style>
+
+        <!-- ComboBox Style -->
+        <Style x:Key="FormCombo" TargetType="ComboBox">
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="MinWidth" Value="160"/>
+        </Style>
+
+        <!-- Form Button Style -->
+        <Style x:Key="FormBtn" TargetType="Button">
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Padding" Value="18,0"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Background" Value="#2563EB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#1D4ED8"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#93C5FD"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Inline Delete Button Style -->
+        <Style x:Key="DeleteBtn" TargetType="Button">
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="Width" Value="56"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Background" Value="#EF4444"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#DC2626"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- DataGrid Header -->
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#F8FAFC"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="Height" Value="40"/>
+        </Style>
+
+        <!-- DataGrid Cell -->
+        <Style TargetType="DataGridCell">
+            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Padding="{TemplateBinding Padding}"
+                                Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#EFF6FF"/>
+                    <Setter Property="Foreground" Value="#1E40AF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>  <!-- Header -->
+            <RowDefinition Height="Auto"/>  <!-- Stat cards -->
+            <RowDefinition Height="Auto"/>  <!-- Assignment Add Form -->
+            <RowDefinition Height="Auto"/>  <!-- Status loading -->
+            <RowDefinition Height="*"/>     <!-- Assignments Table -->
+        </Grid.RowDefinitions>
+
+        <!-- ── Page Header ─────────────────────────────────────────────── -->
+        <Border Grid.Row="0"
+                Background="White" BorderBrush="#E2E8F0"
+                BorderThickness="1" CornerRadius="10"
+                Padding="24,20" Margin="0,0,0,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Text="🛠️ Quản trị hệ thống"
+                               FontSize="24" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Tổng quan hệ thống và phân công giảng dạy cho giáo viên"
+                               FontSize="13" Foreground="#64748B" Margin="0,6,0,0"/>
+                </StackPanel>
+
+                <Button Grid.Column="1"
+                        Content="🔄 Làm mới"
+                        Command="{Binding RefreshCommand}"
+                        Background="#F1F5F9" Foreground="#475569"
+                        BorderBrush="#CBD5E1" BorderThickness="1"
+                        Height="38" Padding="16,0" FontWeight="SemiBold"
+                        VerticalAlignment="Center" Cursor="Hand">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- ── Statistics Cards ────────────────────────────────────────── -->
+        <Grid Grid.Row="1" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Students -->
+            <Border Grid.Column="0" Style="{StaticResource StatCard}">
+                <StackPanel>
+                    <TextBlock Text="Học sinh" FontSize="12" FontWeight="SemiBold" Foreground="#64748B"/>
+                    <TextBlock Text="{Binding TotalStudents}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Classes -->
+            <Border Grid.Column="1" Style="{StaticResource StatCard}">
+                <StackPanel>
+                    <TextBlock Text="Lớp học" FontSize="12" FontWeight="SemiBold" Foreground="#64748B"/>
+                    <TextBlock Text="{Binding TotalClasses}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Teachers -->
+            <Border Grid.Column="2" Style="{StaticResource StatCard}">
+                <StackPanel>
+                    <TextBlock Text="Giáo viên" FontSize="12" FontWeight="SemiBold" Foreground="#64748B"/>
+                    <TextBlock Text="{Binding TotalTeachers}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Subjects -->
+            <Border Grid.Column="3" Style="{StaticResource StatCard}" Margin="0">
+                <StackPanel>
+                    <TextBlock Text="Môn học" FontSize="12" FontWeight="SemiBold" Foreground="#64748B"/>
+                    <TextBlock Text="{Binding TotalSubjects}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- ── Add Assignment Form ────────────────────────────────────── -->
+        <Border Grid.Row="2"
+                Background="White" BorderBrush="#E2E8F0"
+                BorderThickness="1" CornerRadius="10"
+                Padding="20,16" Margin="0,0,0,16">
+            <StackPanel>
+                <TextBlock Text="➕ Thêm phân công giảng dạy" FontSize="15" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,12"/>
+                
+                <StackPanel Orientation="Horizontal">
+                    <!-- Giáo viên -->
+                    <StackPanel Margin="0,0,12,0">
+                        <TextBlock Text="Giáo viên" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding Teachers}"
+                                  SelectedItem="{Binding SelectedTeacher}"
+                                  DisplayMemberPath="TenGiaoVien"
+                                  Style="{StaticResource FormCombo}"
+                                  Width="180"/>
+                    </StackPanel>
+
+                    <!-- Lớp học -->
+                    <StackPanel Margin="0,0,12,0">
+                        <TextBlock Text="Lớp học" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding Classes}"
+                                  SelectedItem="{Binding SelectedClass}"
+                                  DisplayMemberPath="TenLop"
+                                  Style="{StaticResource FormCombo}"
+                                  Width="130"/>
+                    </StackPanel>
+
+                    <!-- Môn học -->
+                    <StackPanel Margin="0,0,12,0">
+                        <TextBlock Text="Môn học" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding Subjects}"
+                                  SelectedItem="{Binding SelectedSubject}"
+                                  DisplayMemberPath="TenMonHoc"
+                                  Style="{StaticResource FormCombo}"
+                                  Width="150"/>
+                    </StackPanel>
+
+                    <!-- Học kỳ -->
+                    <StackPanel Margin="0,0,16,0">
+                        <TextBlock Text="Học kỳ" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding Terms}"
+                                  SelectedItem="{Binding SelectedTerm}"
+                                  Style="{StaticResource FormCombo}"
+                                  Width="180">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <Run Text="{Binding TenHocKy}"/>
+                                        <Run Text=" — "/>
+                                        <Run Text="{Binding NamHoc}"/>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Submit -->
+                    <Button Content="Phân công"
+                            Command="{Binding AddAssignmentCommand}"
+                            Style="{StaticResource FormBtn}"
+                            VerticalAlignment="Bottom"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- ── Status Message / Loading ───────────────────────────────── -->
+        <Grid Grid.Row="3" Margin="0,0,0,12">
+            <ProgressBar IsIndeterminate="True" Height="5"
+                          Visibility="{Binding IsLoading, Converter={StaticResource BoolVis}}"/>
+            <TextBlock Text="{Binding StatusMessage}"
+                       FontSize="13" FontWeight="SemiBold"
+                       Foreground="#64748B"
+                       Visibility="{Binding StatusMessage, Converter={StaticResource BoolVis}}"/>
+        </Grid>
+
+        <!-- ── Assignments List Grid ──────────────────────────────────── -->
+        <Border Grid.Row="4" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10">
+            <DataGrid ItemsSource="{Binding Assignments}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      GridLinesVisibility="Horizontal"
+                      BorderThickness="0"
+                      Background="Transparent"
+                      RowHeight="46"
+                      HeadersVisibility="Column"
+                      VerticalScrollBarVisibility="Auto">
+
+                <DataGrid.Columns>
+                    <!-- ID -->
+                    <DataGridTextColumn Header="Mã phân công" Binding="{Binding IdPhanCong}" Width="150">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontFamily" Value="Consolas"/>
+                                <Setter Property="FontSize" Value="11"/>
+                                <Setter Property="Foreground" Value="#64748B"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Giáo viên -->
+                    <DataGridTextColumn Header="Giáo viên" Binding="{Binding TenGiaoVien}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="Foreground" Value="#1E293B"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Lớp học -->
+                    <DataGridTextColumn Header="Lớp" Binding="{Binding TenLop}" Width="110">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#0F172A"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Môn học -->
+                    <DataGridTextColumn Header="Môn học" Binding="{Binding TenMonHoc}" Width="150">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#0F172A"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Học kỳ -->
+                    <DataGridTextColumn Header="Học kỳ" Binding="{Binding TenHocKy}" Width="180">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#475569"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Actions -->
+                    <DataGridTemplateColumn Header="Hành động" Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Xóa"
+                                        Command="{Binding DataContext.DeleteAssignmentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding}"
+                                        Style="{StaticResource DeleteBtn}"
+                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>

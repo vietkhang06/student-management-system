@@ -25,4 +25,9 @@ public interface ChiTietDiemRepository extends JpaRepository<ChiTietDiem, ChiTie
             String idLop,
             String idHocKy
     );
+
+    List<ChiTietDiem> findByHocSinh_IdHocSinhAndHocKy_IdHocKy(
+            String idHocSinh,
+            String idHocKy
+    );
 }

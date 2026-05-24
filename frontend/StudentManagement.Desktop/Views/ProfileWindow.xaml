@@ -1,0 +1,201 @@
+<Window x:Class="StudentManagement.Desktop.Views.ProfileWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Thông tin cá nhân" 
+        Height="540" Width="420"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent">
+
+    <Window.Resources>
+        <!-- Standard text labels -->
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+
+        <!-- Standard value labels -->
+        <Style x:Key="ValueStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+
+        <!-- Close button style -->
+        <Style x:Key="CloseBtnStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="#0F172A"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border CornerRadius="16" Background="White" BorderBrush="#E2E8F0" BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="20" ShadowDepth="2" Color="#0F172A" Opacity="0.1"/>
+        </Border.Effect>
+        
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/> <!-- Header / Avatar -->
+                <RowDefinition Height="*"/>    <!-- Content Fields -->
+                <RowDefinition Height="Auto"/> <!-- Action bar -->
+            </Grid.RowDefinitions>
+
+            <!-- ── Header Banner & Avatar ────────────────────────────────── -->
+            <Grid Grid.Row="0">
+                <!-- Banner gradient background -->
+                <Border Height="120" CornerRadius="15,15,0,0">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#2563EB" Offset="0.0"/>
+                            <GradientStop Color="#1D4ED8" Offset="1.0"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+
+                <!-- Close Button -->
+                <Button Content="✕" 
+                        Style="{StaticResource CloseBtnStyle}"
+                        Width="32" Height="32"
+                        HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Margin="12"
+                        Foreground="White"
+                        Click="Close_Click"/>
+
+                <!-- Avatar Circle -->
+                <StackPanel VerticalAlignment="Bottom" Margin="0,35,0,-40" HorizontalAlignment="Center">
+                    <Border Width="88" Height="88" 
+                            CornerRadius="44" 
+                            Background="#F0F9FF"
+                            BorderBrush="White" 
+                            BorderThickness="4">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="8" ShadowDepth="1" Color="#000000" Opacity="0.15"/>
+                        </Border.Effect>
+                        <Grid>
+                            <TextBlock x:Name="TxtInitials" 
+                                       Text="NV" 
+                                       FontSize="28" 
+                                       FontWeight="Bold" 
+                                       Foreground="#0284C7"
+                                       HorizontalAlignment="Center" 
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Grid>
+
+            <!-- ── Profile details fields ────────────────────────────────── -->
+            <ScrollViewer Grid.Row="1" Margin="32,56,32,16" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <!-- Họ và tên -->
+                    <TextBlock Text="Họ và tên" Style="{StaticResource LabelStyle}"/>
+                    <TextBlock x:Name="TxtFullName" Text="Nguyễn Văn Quan" Style="{StaticResource ValueStyle}"/>
+
+                    <!-- Tên đăng nhập & Vai trò -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Tên đăng nhập" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock x:Name="TxtUsername" Text="admin01" Style="{StaticResource ValueStyle}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Vai trò" Style="{StaticResource LabelStyle}"/>
+                            <!-- Styled role badge -->
+                            <Border x:Name="BadgeRole" CornerRadius="6" Padding="8,3" Background="#FEF3C7" HorizontalAlignment="Left" Margin="0,0,0,16">
+                                <TextBlock x:Name="TxtRole" Text="Ban Quản Lý" FontSize="12" FontWeight="Bold" Foreground="#92400E"/>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+
+                    <Separator Margin="0,0,0,16" Background="#F1F5F9"/>
+
+                    <!-- CMND / CCCD & SĐT -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="CMND / CCCD" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock x:Name="TxtCmnd" Text="123456789" Style="{StaticResource ValueStyle}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Số điện thoại" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock x:Name="TxtSdt" Text="0901234567" Style="{StaticResource ValueStyle}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Ngày sinh & Giới tính -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Ngày sinh" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock x:Name="TxtDob" Text="01/01/1990" Style="{StaticResource ValueStyle}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Giới tính" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock x:Name="TxtGender" Text="Nam" Style="{StaticResource ValueStyle}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Lớp chủ nhiệm (For teachers only) -->
+                    <StackPanel x:Name="PanelHomeroom" Visibility="Collapsed">
+                        <TextBlock Text="Lớp chủ nhiệm" Style="{StaticResource LabelStyle}"/>
+                        <TextBlock x:Name="TxtHomeroom" Text="Lớp 10A1" Style="{StaticResource ValueStyle}"/>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ── Bottom buttons ────────────────────────────────────────── -->
+            <Border Grid.Row="2" Padding="24,16" Background="#F8FAFC" CornerRadius="0,0,15,15" BorderBrush="#E2E8F0" BorderThickness="0,1,0,0">
+                <Button Content="Đóng" 
+                        Click="Close_Click"
+                        Width="100" Height="36"
+                        HorizontalAlignment="Right"
+                        Background="#2563EB" Foreground="White"
+                        FontWeight="Bold" FontSize="13"
+                        BorderThickness="0" Cursor="Hand">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="6"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

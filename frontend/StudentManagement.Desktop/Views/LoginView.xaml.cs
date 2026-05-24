@@ -1,12 +1,13 @@
 using System.Windows;
+using StudentManagement.Desktop.ViewModels;
 
-namespace StudentManagement.Desktop.Views
+namespace StudentManagement.Desktop.Views;
+
+public partial class LoginView : Window
 {
-    public partial class LoginView : Window
+    public LoginView(LoginViewModel viewModel)
     {
-        public LoginView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+        DataContext = viewModel;
     }
 }

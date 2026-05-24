@@ -21,6 +21,9 @@ import java.util.stream.Collectors;
 import java.time.Period;
 import java.util.List;
 
+import com.demo.student_management.entity.ThamSo;
+import com.demo.student_management.repository.ThamSoRepository;
+
 @Service
 @RequiredArgsConstructor
 public class HocSinhServiceImpl implements HocSinhService {
@@ -28,6 +31,7 @@ public class HocSinhServiceImpl implements HocSinhService {
     private final HocSinhRepository hocSinhRepository;
     private final LopRepository lopRepository;
     private final ChiTietDiemRepository chiTietDiemRepository;
+    private final ThamSoRepository thamSoRepository;
 
     @Override
     public HocSinhResponse create(HocSinhCreateRequest request) {
@@ -39,13 +43,23 @@ public class HocSinhServiceImpl implements HocSinhService {
                 .orElseThrow(() -> new BusinessException("Lớp không tồn tại"));
 
         long siSoHienTai = hocSinhRepository.countByLop_IdLop(request.getIdLop());
-        if (siSoHienTai >= 40) {
-            throw new BusinessException("Lớp đã đủ 40 học sinh");
+        int maxSiSo = Integer.parseInt(thamSoRepository.findByTenThamSo("QD2_SI_SO_TOI_DA")
+                .map(ThamSo::getGiaTriThamSo)
+                .orElse("40"));
+        if (siSoHienTai >= maxSiSo) {
+            throw new BusinessException("Lớp đã đủ " + maxSiSo + " học sinh");
         }
 
+        int minTuoi = Integer.parseInt(thamSoRepository.findByTenThamSo("QD1_MIN_TUOI")
+                .map(ThamSo::getGiaTriThamSo)
+                .orElse("15"));
+        int maxTuoi = Integer.parseInt(thamSoRepository.findByTenThamSo("QD1_MAX_TUOI")
+                .map(ThamSo::getGiaTriThamSo)
+                .orElse("20"));
+
         int tuoi = Period.between(request.getNgaySinh(), java.time.LocalDate.now()).getYears();
-        if (tuoi < 15 || tuoi > 20) {
-            throw new BusinessException("Tuổi học sinh phải từ 15 đến 20");
+        if (tuoi < minTuoi || tuoi > maxTuoi) {
+            throw new BusinessException("Tuổi học sinh phải từ " + minTuoi + " đến " + maxTuoi);
         }
 
         HocSinh hocSinh = HocSinh.builder()
@@ -135,15 +149,8 @@ public class HocSinhServiceImpl implements HocSinhService {
             String idHocKy
     ) {
 
-        List<ChiTietDiem> scores =
-                chiTietDiemRepository.findAll()
-                        .stream()
-                        .filter(x ->
-                                x.getHocSinh().getIdHocSinh().equals(idHocSinh)
-                                        &&
-                                        x.getHocKy().getIdHocKy().equals(idHocKy)
-                        )
-                        .toList();
+        List<ChiTietDiem> scores = chiTietDiemRepository
+                .findByHocSinh_IdHocSinhAndHocKy_IdHocKy(idHocSinh, idHocKy);
 
         if (scores.isEmpty()) {
             return 0.0;

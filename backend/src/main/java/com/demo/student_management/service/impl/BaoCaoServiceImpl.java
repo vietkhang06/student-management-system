@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.demo.student_management.entity.ThamSo;
+import com.demo.student_management.repository.ThamSoRepository;
+
 @Service
 @RequiredArgsConstructor
 public class BaoCaoServiceImpl implements BaoCaoService {
@@ -30,6 +33,8 @@ public class BaoCaoServiceImpl implements BaoCaoService {
     private final ChiTietDiemRepository chiTietDiemRepository;
 
     private final HocSinhRepository hocSinhRepository;
+
+    private final ThamSoRepository thamSoRepository;
 
     @Override
     public BaoCaoMonResponse baoCaoTongKetMon(
@@ -56,13 +61,17 @@ public class BaoCaoServiceImpl implements BaoCaoService {
                                 idHocKy
                         );
 
-        int tongHocSinh = danhSach.size();
+        int tongHocSinh = (int) hocSinhRepository.countByLop_IdLop(idLop);
+
+        double diemDat = Double.parseDouble(thamSoRepository.findByTenThamSo("QD5_DIEM_DAT")
+                .map(ThamSo::getGiaTriThamSo)
+                .orElse("5.0"));
 
         int soLuongDat = (int) danhSach.stream()
                 .filter(x ->
                         x.getDiemTb() != null
                                 && x.getDiemTb()
-                                .compareTo(BigDecimal.valueOf(5)) >= 0
+                                .compareTo(BigDecimal.valueOf(diemDat)) >= 0
                 )
                 .count();
 
@@ -111,6 +120,10 @@ public class BaoCaoServiceImpl implements BaoCaoService {
                                 )
                         );
 
+        double diemDat = Double.parseDouble(thamSoRepository.findByTenThamSo("QD5_DIEM_DAT")
+                .map(ThamSo::getGiaTriThamSo)
+                .orElse("5.0"));
+
         int soLuongDat = 0;
 
         for (List<ChiTietDiem> scoresOfStudent
@@ -128,7 +141,7 @@ public class BaoCaoServiceImpl implements BaoCaoService {
                     .average()
                     .orElse(0.0);
 
-            if (avg >= 5.0) {
+            if (avg >= diemDat) {
                 soLuongDat++;
             }
         }

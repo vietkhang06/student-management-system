@@ -74,18 +74,41 @@ public class DiemServiceImpl implements DiemService {
     @Override
     @Transactional(readOnly = true)
     public List<DiemResponse> getByClassSubjectTerm(String idLop, String idMonHoc, String idHocKy) {
-        return chiTietDiemRepository
-                .findByHocSinh_Lop_IdLopAndMonHoc_IdMonHocAndHocKy_IdHocKy(idLop, idMonHoc, idHocKy)
-                .stream()
-                .map(x -> new DiemResponse(
-                        x.getHocSinh().getIdHocSinh(),
-                        x.getHocSinh().getTen(),
-                        x.getMonHoc().getIdMonHoc(),
-                        x.getHocKy().getIdHocKy(),
-                        x.getDiem15(),
-                        x.getDiem45(),
-                        x.getDiemTb()
-                ))
+        List<HocSinh> students = hocSinhRepository.findByLop_IdLop(idLop);
+        List<ChiTietDiem> scores = chiTietDiemRepository
+                .findByHocSinh_Lop_IdLopAndMonHoc_IdMonHocAndHocKy_IdHocKy(idLop, idMonHoc, idHocKy);
+
+        java.util.Map<String, ChiTietDiem> scoreMap = scores.stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        x -> x.getHocSinh().getIdHocSinh(),
+                        x -> x
+                ));
+
+        return students.stream()
+                .map(student -> {
+                    ChiTietDiem score = scoreMap.get(student.getIdHocSinh());
+                    if (score != null) {
+                        return new DiemResponse(
+                                student.getIdHocSinh(),
+                                student.getTen(),
+                                idMonHoc,
+                                idHocKy,
+                                score.getDiem15(),
+                                score.getDiem45(),
+                                score.getDiemTb()
+                        );
+                    } else {
+                        return new DiemResponse(
+                                student.getIdHocSinh(),
+                                student.getTen(),
+                                idMonHoc,
+                                idHocKy,
+                                null,
+                                null,
+                                null
+                        );
+                    }
+                })
                 .toList();
     }
 

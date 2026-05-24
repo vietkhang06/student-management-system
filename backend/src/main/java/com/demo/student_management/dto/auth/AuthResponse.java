@@ -10,4 +10,5 @@ public class AuthResponse {
     private String idTaiKhoan;
     private String tenDangNhap;
     private String loaiTaiKhoan;
+    private String token;
 }

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="StudentManagement.Desktop/StudentManagement.Desktop.csproj" />
+  <Project Path="StudentManagement.Shared/StudentManagement.Shared.csproj" />
+</Solution>

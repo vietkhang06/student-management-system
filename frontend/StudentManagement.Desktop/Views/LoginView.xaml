@@ -1,0 +1,19 @@
+<Window x:Class="StudentManagement.Desktop.Views.LoginView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Login"
+        Height="450"
+        Width="800">
+
+    <Grid Background="White">
+
+        <TextBlock
+            Text="Student Management Login"
+            FontSize="28"
+            FontWeight="Bold"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"/>
+
+    </Grid>
+
+</Window>

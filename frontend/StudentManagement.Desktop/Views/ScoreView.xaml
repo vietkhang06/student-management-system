@@ -59,7 +59,7 @@
             <Setter Property="Padding" Value="16,0"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Background" Value="#059669"/>
+            <Setter Property="Background" Value="#0F172A"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -167,14 +167,10 @@
                 Padding="24,20"
                 Margin="0,0,0,16">
             <StackPanel>
-                <TextBlock Text="📝 Bảng điểm môn học"
+                <TextBlock Text="Bảng điểm môn học"
                            FontSize="24"
                            FontWeight="Bold"
                            Foreground="#0F172A"/>
-                <TextBlock Text="Biểu mẫu 4 — Nhập và tra cứu điểm học sinh theo lớp, môn và học kỳ"
-                           FontSize="13"
-                           Foreground="#64748B"
-                           Margin="0,6,0,0"/>
             </StackPanel>
         </Border>
 
@@ -235,7 +231,7 @@
                 </StackPanel>
 
                 <!-- Load button aligned bottom -->
-                <Button Content="🔍 Tải bảng điểm"
+                <Button Content="Tải bảng điểm"
                         Command="{Binding LoadScoresCommand}"
                         Style="{StaticResource LoadButton}"
                         VerticalAlignment="Bottom"/>
@@ -279,7 +275,7 @@
                             </Style.Triggers>
                         </Style>
                     </StackPanel.Style>
-                    <TextBlock Text="📋 Chọn lớp, môn học và học kỳ rồi nhấn Tải bảng điểm"
+                    <TextBlock Text="Chọn lớp, môn học và học kỳ rồi nhấn Tải bảng điểm"
                                FontSize="15"
                                FontWeight="SemiBold"
                                Foreground="#94A3B8"

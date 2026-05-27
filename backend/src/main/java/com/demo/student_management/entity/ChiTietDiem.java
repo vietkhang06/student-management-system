@@ -22,17 +22,17 @@ public class ChiTietDiem {
 
     @MapsId("idHocSinh")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "ID_HOCSINH", nullable = false)
+    @JoinColumn(name = "ID_HOCSINH", columnDefinition = "char(10)", nullable = false)
     private HocSinh hocSinh;
 
     @MapsId("idMonHoc")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "ID_MONHOC", nullable = false)
+    @JoinColumn(name = "ID_MONHOC", columnDefinition = "varchar(20)", nullable = false)
     private MonHoc monHoc;
 
     @MapsId("idHocKy")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "ID_HOCKY", nullable = false)
+    @JoinColumn(name = "ID_HOCKY", columnDefinition = "varchar(20)", nullable = false)
     private HocKy hocKy;
 
     @Column(name = "DIEM15", precision = 4, scale = 2)

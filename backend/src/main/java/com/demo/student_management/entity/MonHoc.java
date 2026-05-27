@@ -25,6 +25,10 @@ public class MonHoc {
     @Column(name = "TEN_MONHOC", length = 100, nullable = false)
     private String tenMonHoc;
 
+    @Column(name = "TRANG_THAI_SU_DUNG")
+    @Builder.Default
+    private Boolean trangThaiSuDung = true;
+
     @OneToMany(mappedBy = "monHoc", fetch = FetchType.LAZY)
     @JsonIgnore
     @Builder.Default

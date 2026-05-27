@@ -15,6 +15,91 @@
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="Foreground" Value="#0F172A" />
         </Style>
+        <Style x:Key="ActionBtnPrimary" TargetType="Button">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="Background" Value="#0F172A"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#1E293B"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ActionBtnSecondary" TargetType="Button">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E2E8F0"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ActionBtnDanger" TargetType="Button">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="Background" Value="#FEF2F2"/>
+            <Setter Property="Foreground" Value="#DC2626"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderBrush" Value="#FECACA"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FEE2E2"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
 
     <Grid Margin="32">
@@ -31,14 +116,28 @@
                 BorderThickness="1"
                 CornerRadius="8"
                 Padding="24"
-                Margin="0,0,0,24">
-            <StackPanel>
-                <TextBlock Text="Tra cứu học sinh" Style="{StaticResource HeaderTextStyle}" />
-                <TextBlock Text="Biểu mẫu 3: Tìm kiếm học sinh và tra cứu điểm trung bình học kỳ"
-                           FontSize="14"
-                           Foreground="#64748B"
-                           Margin="0,8,0,0" />
-            </StackPanel>
+                Margin="0,0,0,16">
+            <Grid>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Quản lý học sinh" Style="{StaticResource HeaderTextStyle}" />
+                    <TextBlock Text="Tra cứu, thêm mới, chỉnh sửa và xóa học sinh"
+                               Foreground="#64748B" FontSize="13" Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <!-- CRUD Buttons — visible only for BanQuanLy -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Visibility="{Binding IsBanQuanLy, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Button Content="Sửa"
+                            Command="{Binding EditStudentCommand}"
+                            IsEnabled="{Binding IsStudentSelected}"
+                            Style="{StaticResource ActionBtnSecondary}"
+                            Margin="0,0,8,0"/>
+                    <Button Content="Xóa"
+                            Command="{Binding DeleteStudentCommand}"
+                            IsEnabled="{Binding IsStudentSelected}"
+                            Style="{StaticResource ActionBtnDanger}"/>
+                </StackPanel>
+            </Grid>
         </Border>
 
         <!-- Filter Bar -->
@@ -48,7 +147,7 @@
                 BorderThickness="1"
                 CornerRadius="8"
                 Padding="16"
-                Margin="0,0,0,20">
+                Margin="0,0,0,16">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -83,34 +182,15 @@
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom">
                     <Button Content="Tìm kiếm"
                             Command="{Binding SearchCommand}"
-                            Height="38"
-                            Width="100"
-                            Background="#2563EB"
-                            Foreground="White"
-                            FontWeight="SemiBold"
-                            Margin="0,0,8,0"
-                            BorderThickness="0">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="6"/>
-                            </Style>
-                        </Button.Resources>
-                    </Button>
-                    
+                            Style="{StaticResource ActionBtnPrimary}"
+                            Margin="0,0,8,0"/>
                     <Button Content="Làm mới"
                             Command="{Binding ResetCommand}"
-                            Height="38"
-                            Width="100"
-                            Background="#E2E8F0"
-                            Foreground="#0F172A"
-                            FontWeight="SemiBold"
-                            BorderThickness="0">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="6"/>
-                            </Style>
-                        </Button.Resources>
-                    </Button>
+                            Style="{StaticResource ActionBtnSecondary}"
+                            Margin="0,0,8,0"/>
+                    <Button Content="↺ Tải lại"
+                            Command="{Binding RefreshCommand}"
+                            Style="{StaticResource ActionBtnSecondary}"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -118,7 +198,7 @@
         <!-- Data Grid Content -->
         <Grid Grid.Row="2">
             <!-- Loading Indicator -->
-            <Border Background="#50FFFFFF"
+            <Border Background="#80FFFFFF"
                     Panel.ZIndex="10"
                     Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -138,6 +218,7 @@
                     CornerRadius="8">
                 <Grid>
                     <DataGrid ItemsSource="{Binding StudentList}"
+                              SelectedItem="{Binding SelectedStudent, Mode=TwoWay}"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"
                               GridLinesVisibility="Horizontal"
@@ -145,6 +226,7 @@
                               Background="Transparent"
                               RowHeight="40"
                               HeadersVisibility="Column"
+                              SelectionMode="Single"
                               HorizontalScrollBarVisibility="Auto"
                               VerticalScrollBarVisibility="Auto">
                         <DataGrid.Resources>
@@ -157,6 +239,18 @@
                                 <Setter Property="BorderThickness" Value="0,0,0,1"/>
                                 <Setter Property="BorderBrush" Value="#E2E8F0"/>
                                 <Setter Property="Height" Value="42"/>
+                            </Style>
+                            <!-- Row Style -->
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="Cursor" Value="Hand"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#EFF6FF"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#F8FAFC"/>
+                                    </Trigger>
+                                </Style.Triggers>
                             </Style>
                             <!-- Cell Style -->
                             <Style TargetType="DataGridCell">
@@ -190,10 +284,9 @@
                     </DataGrid>
 
                     <!-- Empty State -->
-                    <StackPanel VerticalAlignment="Center" 
+                    <StackPanel VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
                                 Visibility="{Binding StudentList.Count, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverted}">
-                        <!-- Show when StudentList is empty and not busy -->
                         <TextBlock Text="📭 Không tìm thấy học sinh nào"
                                    FontSize="16"
                                    FontWeight="SemiBold"

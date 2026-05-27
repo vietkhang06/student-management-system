@@ -128,7 +128,7 @@
                 Padding="24,20"
                 Margin="0,0,0,24">
             <StackPanel>
-                <TextBlock Text="📥 Tiếp nhận học sinh"
+                <TextBlock Text="Tiếp nhận học sinh"
                            FontSize="24"
                            FontWeight="Bold"
                            Foreground="#0F172A"/>
@@ -267,7 +267,7 @@
                                 Padding="14,12"
                                 Margin="0,0,0,24">
                             <StackPanel>
-                                <TextBlock Text="⚡ Quy định hiện hành"
+                                <TextBlock Text="Quy định hiện hành"
                                            FontSize="12"
                                            FontWeight="Bold"
                                            Foreground="#92400E"
@@ -323,12 +323,12 @@
                             </Grid.ColumnDefinitions>
 
                             <Button Grid.Column="0"
-                                    Content="🔄 Làm mới"
+                                    Content="Làm mới"
                                     Command="{Binding ResetFormCommand}"
                                     Style="{StaticResource SecondaryButton}"/>
 
                             <Button Grid.Column="2"
-                                    Content="✅ Tiếp nhận"
+                                    Content="Tiếp nhận"
                                     Command="{Binding SubmitCommand}"
                                     Style="{StaticResource PrimaryButton}"/>
                         </Grid>

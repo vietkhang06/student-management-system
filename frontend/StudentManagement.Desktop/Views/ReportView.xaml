@@ -26,10 +26,11 @@
         <!-- Load button (indigo) -->
         <Style x:Key="LoadButton" TargetType="Button">
             <Setter Property="Height" Value="38"/>
+            <Setter Property="Width" Value="98"/>
             <Setter Property="Padding" Value="18,0"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Background" Value="#6366F1"/>
+            <Setter Property="Background" Value="#0F172A"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -41,7 +42,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#4F46E5"/>
+                                <Setter Property="Background" Value="#0F172A"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Background" Value="#A5B4FC"/>
@@ -83,10 +84,8 @@
                 BorderThickness="1" CornerRadius="10"
                 Padding="24,20" Margin="0,0,0,16">
             <StackPanel>
-                <TextBlock Text="📊 Báo cáo tổng kết"
+                <TextBlock Text="Báo cáo tổng kết"
                            FontSize="24" FontWeight="Bold" Foreground="#0F172A"/>
-                <TextBlock Text="Xem tổng kết môn học và học kỳ — tỉ lệ đạt và sĩ số theo lớp"
-                           FontSize="13" Foreground="#64748B" Margin="0,6,0,0"/>
             </StackPanel>
         </Border>
 
@@ -97,15 +96,15 @@
                 Margin="0,0,0,16">
             <StackPanel Orientation="Horizontal" Margin="12,0">
                 <Button x:Name="BtnTabSubject"
-                        Content="📚 Tổng kết môn học"
+                        Content="Tổng kết môn học"
                         Height="42" Padding="20,0"
                         FontSize="14" FontWeight="SemiBold"
                         Background="Transparent" BorderThickness="0,0,0,2"
-                        BorderBrush="#4F46E5" Foreground="#4F46E5"
+                        BorderBrush="#0F172A" Foreground="#0F172A"
                         Cursor="Hand"
                         Click="TabSubjectClick"/>
                 <Button x:Name="BtnTabSemester"
-                        Content="📅 Tổng kết học kỳ"
+                        Content="Tổng kết học kỳ"
                         Height="42" Padding="20,0"
                         FontSize="14" FontWeight="SemiBold"
                         Background="Transparent" BorderThickness="0"
@@ -167,7 +166,7 @@
 
                     <!-- Subject report button -->
                     <Button x:Name="BtnLoadSubject"
-                            Content="🔍 Xem báo cáo"
+                            Content="Xem báo cáo"
                             Command="{Binding LoadSubjectReportCommand}"
                             Style="{StaticResource LoadButton}"
                             VerticalAlignment="Bottom"/>
@@ -218,7 +217,7 @@
                                 </Style.Triggers>
                             </Style>
                         </StackPanel.Style>
-                        <TextBlock Text="📚 Chọn lớp, môn học và học kỳ rồi nhấn Xem báo cáo"
+                        <TextBlock Text="Chọn lớp, môn học và học kỳ rồi nhấn Xem báo cáo"
                                    FontSize="15" FontWeight="SemiBold"
                                    Foreground="#94A3B8" HorizontalAlignment="Center"/>
                         <TextBlock Text="Kết quả sẽ hiển thị tổng số học sinh, số đạt và tỉ lệ."
@@ -243,28 +242,28 @@
                             <!-- Sĩ số -->
                             <Border Background="#EFF6FF" Style="{StaticResource StatCard}">
                                 <StackPanel>
-                                    <TextBlock Text="📋 Sĩ số" FontSize="13" Foreground="#3B82F6" FontWeight="SemiBold"/>
+                                    <TextBlock Text="Sĩ số" FontSize="20" Foreground="#3B82F6" FontWeight="SemiBold" TextAlignment="Center"/>
                                     <TextBlock Text="{Binding SubjectReportTongHocSinh}"
                                                Style="{StaticResource StatNumber}" Foreground="#1D4ED8"/>
-                                    <TextBlock Text="học sinh" FontSize="12" Foreground="#93C5FD"/>
+                                    <TextBlock Text="học sinh" FontSize="15" Foreground="#93C5FD" TextAlignment="Center"/>
                                 </StackPanel>
                             </Border>
                             <!-- Số đạt -->
                             <Border Background="#F0FDF4" Style="{StaticResource StatCard}">
                                 <StackPanel>
-                                    <TextBlock Text="✅ Số lượng đạt" FontSize="13" Foreground="#16A34A" FontWeight="SemiBold"/>
+                                    <TextBlock Text="Số lượng đạt" FontSize="20" Foreground="#16A34A" FontWeight="SemiBold" TextAlignment="Center"/>
                                     <TextBlock Text="{Binding SubjectReportSoLuongDat}"
                                                Style="{StaticResource StatNumber}" Foreground="#15803D"/>
-                                    <TextBlock Text="học sinh" FontSize="12" Foreground="#86EFAC"/>
+                                    <TextBlock Text="học sinh" FontSize="15" Foreground="#86EFAC" TextAlignment="Center"/>
                                 </StackPanel>
                             </Border>
                             <!-- Tỉ lệ -->
                             <Border Background="#FFF7ED" Style="{StaticResource StatCard}">
                                 <StackPanel>
-                                    <TextBlock Text="📈 Tỉ lệ đạt" FontSize="13" Foreground="#EA580C" FontWeight="SemiBold"/>
+                                    <TextBlock Text="Tỉ lệ đạt" FontSize="20" Foreground="#EA580C" FontWeight="SemiBold" TextAlignment="Center"/>
                                     <TextBlock Text="{Binding SubjectReportTyLe}"
                                                Style="{StaticResource StatNumber}" Foreground="#C2410C"/>
-                                    <TextBlock Text="trên tổng sĩ số" FontSize="12" Foreground="#FCA5A5"/>
+                                    <TextBlock Text="trên tổng sĩ số" FontSize="15" Foreground="#FCA5A5" TextAlignment="Center"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>

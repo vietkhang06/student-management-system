@@ -32,7 +32,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/register").hasRole("BANQUANLY")
                         .requestMatchers(HttpMethod.GET, "/test").permitAll()
-                        .requestMatchers("/test-db").hasRole("BANQUANLY")
+                        .requestMatchers("/test-db").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("BANQUANLY")
                         .requestMatchers(HttpMethod.POST, "/api/hoc-sinh").hasRole("BANQUANLY")
                         .requestMatchers(HttpMethod.PUT, "/api/tham-so/**").hasRole("BANQUANLY")

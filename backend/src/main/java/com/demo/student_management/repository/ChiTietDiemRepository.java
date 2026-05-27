@@ -30,4 +30,10 @@ public interface ChiTietDiemRepository extends JpaRepository<ChiTietDiem, ChiTie
             String idHocSinh,
             String idHocKy
     );
+
+    boolean existsByMonHoc_IdMonHoc(String idMonHoc);
+
+    boolean existsByHocSinh_IdHocSinh(String idHocSinh);
+
+    void deleteByHocSinh_IdHocSinh(String idHocSinh);
 }

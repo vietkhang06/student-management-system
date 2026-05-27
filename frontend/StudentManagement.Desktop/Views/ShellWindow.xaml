@@ -54,6 +54,7 @@
             <Setter Property="BorderBrush" Value="#334155" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Foreground" Value="#F1F5F9" />
+            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
             <Setter Property="FontSize" Value="14" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -63,7 +64,7 @@
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="6"
                                 Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -92,11 +93,12 @@
                 Padding="20">
             <DockPanel LastChildFill="True">
                 <StackPanel DockPanel.Dock="Top">
-                    <TextBlock Text="Quản lý học sinh"
+                    <TextBlock Text="Hệ thống quản lý học sinh"
                                Foreground="White"
-                               FontSize="21"
+                               FontSize="17"
                                FontWeight="Bold"
-                               TextWrapping="Wrap" />
+                               TextWrapping="Wrap" 
+                               TextAlignment="Center"/>
 
                     <!-- Clickable Profile Card -->
                     <Button Command="{Binding ShowProfileCommand}"
@@ -140,48 +142,45 @@
                     </Button>
 
                     <!-- Sidebar Navigation Buttons -->
-                    <Button Content="🏠 Bảng điều khiển" Style="{StaticResource MenuButtonStyle}" Command="{Binding NavigateToDashboardCommand}" />
-                    <Button Content="🔍 Tra cứu học sinh" Style="{StaticResource MenuButtonStyle}" Command="{Binding NavigateToStudentListCommand}" />
-                    <Button Content="🏫 Danh sách lớp" Style="{StaticResource MenuButtonStyle}" Command="{Binding NavigateToClassListCommand}" />
-                    
-                    <Button Content="📥 Tiếp nhận học sinh"
+                    <Button Content="Bảng điều khiển" Style="{StaticResource MenuButtonStyle}" Command="{Binding NavigateToDashboardCommand}" />
+                    <Button Content="Tra cứu học sinh" Style="{StaticResource MenuButtonStyle}" Command="{Binding NavigateToStudentListCommand}" />
+                    <Button Content="Danh sách lớp" Style="{StaticResource MenuButtonStyle}" Command="{Binding NavigateToClassListCommand}" />
+
+                    <Button Content="Tiếp nhận học sinh"
                             Style="{StaticResource MenuButtonStyle}"
                             Command="{Binding NavigateToAdmissionCommand}"
                             Visibility="{Binding CanReceiveStudents, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                    
-                    <Button Content="📝 Nhập bảng điểm"
+
+                    <Button Content="Nhập bảng điểm"
                             Style="{StaticResource MenuButtonStyle}"
                             Command="{Binding NavigateToScoresCommand}"
                             Visibility="{Binding CanAccessScores, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                    
-                    <Button Content="📊 Báo cáo tổng kết"
+
+                    <Button Content="Báo cáo tổng kết"
                             Style="{StaticResource MenuButtonStyle}"
                             Command="{Binding NavigateToReportsCommand}"
                             Visibility="{Binding CanAccessReports, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                    
-                    <Button Content="⚙️ Quy định hệ thống"
+
+                    <Button Content="Quy định hệ thống"
                             Style="{StaticResource MenuButtonStyle}"
                             Command="{Binding NavigateToRegulationsCommand}"
                             Visibility="{Binding CanManageRegulations, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                    
-                    <Button Content="🛠️ Quản trị hệ thống"
+
+                    <Button Content="Quản trị hệ thống"
                             Style="{StaticResource MenuButtonStyle}"
                             Command="{Binding NavigateToSystemAdminCommand}"
                             Visibility="{Binding CanManageSystem, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </StackPanel>
-
-                <!-- Logout Button at bottom -->
                 <Button DockPanel.Dock="Bottom"
                         Content="Đăng xuất"
                         Command="{Binding LogoutCommand}"
-                        Height="42"
                         Background="#334155"
                         Foreground="White"
                         BorderBrush="#475569"
                         BorderThickness="1"
-                        FontWeight="SemiBold">
+                        FontWeight="SemiBold" Height="42">
                     <Button.Template>
-                        <ControlTemplate TargetType="Button">
+                        <ControlTemplate TargetType="{x:Type Button}">
                             <Border Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
@@ -199,6 +198,8 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
+
+                <!-- Logout Button at bottom -->
             </DockPanel>
         </Border>
 

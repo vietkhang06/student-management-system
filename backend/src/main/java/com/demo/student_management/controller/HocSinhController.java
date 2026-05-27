@@ -2,11 +2,13 @@ package com.demo.student_management.controller;
 
 import com.demo.student_management.dto.hocsinh.HocSinhCreateRequest;
 import com.demo.student_management.dto.hocsinh.HocSinhResponse;
+import com.demo.student_management.dto.hocsinh.HocSinhSummaryResponse;
+import com.demo.student_management.dto.hocsinh.HocSinhUpdateRequest;
 import com.demo.student_management.security.AuthorizationService;
 import com.demo.student_management.service.HocSinhService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.demo.student_management.dto.hocsinh.HocSinhSummaryResponse;
 
 import java.util.List;
 
@@ -67,5 +69,27 @@ public class HocSinhController {
         return summaries.stream()
                 .filter(hs -> assignedClassIds.contains(hs.getIdLop()))
                 .toList();
+    }
+
+    @PutMapping("/{idHocSinh}")
+    public HocSinhResponse update(@PathVariable String idHocSinh, @RequestBody HocSinhUpdateRequest request) {
+        authorizationService.requireAdmin();
+        return hocSinhService.update(idHocSinh, request);
+    }
+
+    @DeleteMapping("/{idHocSinh}")
+    public ResponseEntity<Void> delete(@PathVariable String idHocSinh) {
+        authorizationService.requireAdmin();
+        hocSinhService.delete(idHocSinh);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{idHocSinh}/has-scores")
+    public ResponseEntity<Boolean> hasScores(@PathVariable String idHocSinh) {
+        if (!authorizationService.isBanQuanLy()) {
+            HocSinhResponse hs = hocSinhService.getById(idHocSinh);
+            authorizationService.requireCanAccessClass(hs.getIdLop());
+        }
+        return ResponseEntity.ok(hocSinhService.hasScores(idHocSinh));
     }
 }

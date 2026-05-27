@@ -14,7 +14,7 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class ChiTietDiemId implements Serializable {
 
-    @Column(name = "ID_HOCSINH", length = 10, nullable = false)
+    @Column(name = "ID_HOCSINH", columnDefinition = "char(10)", nullable = false)
     private String idHocSinh;
 
     @Column(name = "ID_MONHOC", length = 20, nullable = false)

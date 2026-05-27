@@ -18,7 +18,7 @@ import java.util.List;
 public class Lop {
 
     @Id
-    @Column(name = "ID_LOP", length = 5, nullable = false)
+    @Column(name = "ID_LOP", columnDefinition = "char(5)", nullable = false)
     @EqualsAndHashCode.Include
     private String idLop;
 

@@ -31,11 +31,11 @@ public sealed class AuthApiClient : IAuthApiClient
                 // Fall through to the generic message when the server returns a non-JSON response.
             }
 
-            throw new ApiException(error?.Message ?? "Dang nhap that bai. Vui long kiem tra lai thong tin.");
+            throw new ApiException(error?.Message ?? "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin !");
         }
 
         AuthResponse? result = await response.Content.ReadFromJsonAsync<AuthResponse>(cancellationToken);
-        return result ?? throw new ApiException("Server khong tra ve du lieu dang nhap hop le.");
+        return result ?? throw new ApiException("Server không trả về dữ liệu đăng nhập hợp lệ.");
     }
 
     public async Task<ProfileResponse> GetProfileAsync(CancellationToken cancellationToken = default)
@@ -54,10 +54,10 @@ public sealed class AuthApiClient : IAuthApiClient
                 // Ignored
             }
 
-            throw new ApiException(error?.Message ?? "Loi tai thong tin ca nhan.");
+            throw new ApiException(error?.Message ?? "Lỗi tải thông tin cá nhân.");
         }
 
         ProfileResponse? profile = await response.Content.ReadFromJsonAsync<ProfileResponse>(cancellationToken);
-        return profile ?? throw new ApiException("Server khong tra ve thong tin ca nhan hop le.");
+        return profile ?? throw new ApiException("Server không trả về dữ liệu đăng nhập hợp lệ.");
     }
 }

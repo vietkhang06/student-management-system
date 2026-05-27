@@ -53,6 +53,26 @@ public sealed class StudentApiClient : IStudentApiClient
         return (await response.Content.ReadFromJsonAsync<HocSinhResponse>(cancellationToken))!;
     }
 
+    public async Task<HocSinhResponse> UpdateAsync(string id, HocSinhUpdateRequest request, CancellationToken cancellationToken = default)
+    {
+        using var response = await _httpClient.PutAsJsonAsync($"api/hoc-sinh/{id}", request, cancellationToken);
+        await EnsureSuccessAsync(response, cancellationToken);
+        return (await response.Content.ReadFromJsonAsync<HocSinhResponse>(cancellationToken))!;
+    }
+
+    public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
+    {
+        using var response = await _httpClient.DeleteAsync($"api/hoc-sinh/{id}", cancellationToken);
+        await EnsureSuccessAsync(response, cancellationToken);
+    }
+
+    public async Task<bool> HasScoresAsync(string id, CancellationToken cancellationToken = default)
+    {
+        using var response = await _httpClient.GetAsync($"api/hoc-sinh/{id}/has-scores", cancellationToken);
+        await EnsureSuccessAsync(response, cancellationToken);
+        return await response.Content.ReadFromJsonAsync<bool>(cancellationToken);
+    }
+
     private static async Task EnsureSuccessAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {
         if (response.IsSuccessStatusCode) return;

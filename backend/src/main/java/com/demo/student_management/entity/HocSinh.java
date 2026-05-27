@@ -19,12 +19,12 @@ import java.util.List;
 public class HocSinh {
 
     @Id
-    @Column(name = "ID_HOCSINH", length = 10, nullable = false)
+    @Column(name = "ID_HOCSINH", columnDefinition = "char(10)", nullable = false)
     @EqualsAndHashCode.Include
     private String idHocSinh;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "ID_LOP", nullable = false)
+    @JoinColumn(name = "ID_LOP", columnDefinition = "char(5)", nullable = false)
     private Lop lop;
 
     @Column(name = "TEN", nullable = false, length = 255)

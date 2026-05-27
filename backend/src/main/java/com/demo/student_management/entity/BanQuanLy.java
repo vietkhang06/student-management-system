@@ -19,6 +19,6 @@ public class BanQuanLy {
     private String idBanQl;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "ID_TAIKHOAN", nullable = false, unique = true)
+    @JoinColumn(name = "ID_TAIKHOAN", columnDefinition = "char(36)", nullable = false, unique = true)
     private TaiKhoan taiKhoan;
 }

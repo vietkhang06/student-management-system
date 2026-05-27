@@ -1,6 +1,6 @@
-namespace StudentManagement.Shared.Dtos.MonHoc;
+namespace StudentManagement.Shared.Dtos.Admin;
 
-public class MonHocResponse
+public sealed class SubjectRequest
 {
     public string IdMonHoc { get; set; } = string.Empty;
     public string TenMonHoc { get; set; } = string.Empty;

@@ -2,6 +2,7 @@ package com.demo.student_management.service.impl;
 
 import com.demo.student_management.dto.hocsinh.HocSinhCreateRequest;
 import com.demo.student_management.dto.hocsinh.HocSinhResponse;
+import com.demo.student_management.dto.hocsinh.HocSinhUpdateRequest;
 import com.demo.student_management.entity.HocSinh;
 import com.demo.student_management.entity.Lop;
 import com.demo.student_management.exception.BusinessException;
@@ -10,6 +11,7 @@ import com.demo.student_management.repository.LopRepository;
 import com.demo.student_management.service.HocSinhService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.demo.student_management.dto.hocsinh.HocSinhSummaryResponse;
 import com.demo.student_management.entity.ChiTietDiem;
@@ -34,9 +36,21 @@ public class HocSinhServiceImpl implements HocSinhService {
     private final ThamSoRepository thamSoRepository;
 
     @Override
+    @Transactional
     public HocSinhResponse create(HocSinhCreateRequest request) {
-        if (hocSinhRepository.existsById(request.getIdHocSinh())) {
+        String idHocSinh = request.getIdHocSinh();
+        if (idHocSinh == null || idHocSinh.trim().isEmpty()) {
+            idHocSinh = generateNextId();
+        } else {
+            idHocSinh = idHocSinh.trim();
+        }
+
+        if (hocSinhRepository.existsById(idHocSinh)) {
             throw new BusinessException("Mã học sinh đã tồn tại");
+        }
+
+        if (request.getNgaySinh() == null) {
+            throw new BusinessException("Ngày sinh không được để trống");
         }
 
         Lop lop = lopRepository.findById(request.getIdLop())
@@ -62,8 +76,10 @@ public class HocSinhServiceImpl implements HocSinhService {
             throw new BusinessException("Tuổi học sinh phải từ " + minTuoi + " đến " + maxTuoi);
         }
 
+        validateEmail(request.getEmail());
+
         HocSinh hocSinh = HocSinh.builder()
-                .idHocSinh(request.getIdHocSinh())
+                .idHocSinh(idHocSinh)
                 .lop(lop)
                 .ten(request.getTen())
                 .gioiTinh(request.getGioiTinh())
@@ -161,5 +177,119 @@ public class HocSinhServiceImpl implements HocSinhService {
                 .collect(Collectors.averagingDouble(
                         x -> x.getDiemTb().doubleValue()
                 ));
+    }
+
+    @Override
+    @Transactional
+    public HocSinhResponse update(String idHocSinh, HocSinhUpdateRequest request) {
+        HocSinh hocSinh = hocSinhRepository.findById(idHocSinh)
+                .orElseThrow(() -> new BusinessException("Không tìm thấy học sinh"));
+
+        if (request.getNgaySinh() == null) {
+            throw new BusinessException("Ngày sinh không được để trống");
+        }
+
+        int minTuoi = Integer.parseInt(thamSoRepository.findByTenThamSo("QD1_MIN_TUOI")
+                .map(ThamSo::getGiaTriThamSo)
+                .orElse("15"));
+        int maxTuoi = Integer.parseInt(thamSoRepository.findByTenThamSo("QD1_MAX_TUOI")
+                .map(ThamSo::getGiaTriThamSo)
+                .orElse("20"));
+
+        int tuoi = Period.between(request.getNgaySinh(), java.time.LocalDate.now()).getYears();
+        if (tuoi < minTuoi || tuoi > maxTuoi) {
+            throw new BusinessException("Tuổi học sinh phải từ " + minTuoi + " đến " + maxTuoi);
+        }
+
+        validateEmail(request.getEmail());
+
+        Lop oldLop = hocSinh.getLop();
+        Lop newLop = lopRepository.findById(request.getIdLop())
+                .orElseThrow(() -> new BusinessException("Lớp không tồn tại"));
+
+        if (!oldLop.getIdLop().equals(newLop.getIdLop())) {
+            long siSoHienTai = hocSinhRepository.countByLop_IdLop(newLop.getIdLop());
+            int maxSiSo = Integer.parseInt(thamSoRepository.findByTenThamSo("QD2_SI_SO_TOI_DA")
+                    .map(ThamSo::getGiaTriThamSo)
+                    .orElse("40"));
+            if (siSoHienTai >= maxSiSo) {
+                throw new BusinessException("Lớp mới đã đủ " + maxSiSo + " học sinh");
+            }
+            hocSinh.setLop(newLop);
+        }
+
+        hocSinh.setTen(request.getTen());
+        hocSinh.setGioiTinh(request.getGioiTinh());
+        hocSinh.setNgaySinh(request.getNgaySinh());
+        hocSinh.setDiaChi(request.getDiaChi());
+        hocSinh.setEmail(request.getEmail());
+
+        hocSinhRepository.save(hocSinh);
+
+        // Recount sizes
+        oldLop.setSiSo((int) hocSinhRepository.countByLop_IdLop(oldLop.getIdLop()));
+        lopRepository.save(oldLop);
+
+        if (!oldLop.getIdLop().equals(newLop.getIdLop())) {
+            newLop.setSiSo((int) hocSinhRepository.countByLop_IdLop(newLop.getIdLop()));
+            lopRepository.save(newLop);
+        }
+
+        return toResponse(hocSinh);
+    }
+
+    @Override
+    @Transactional
+    public void delete(String idHocSinh) {
+        HocSinh hocSinh = hocSinhRepository.findById(idHocSinh)
+                .orElseThrow(() -> new BusinessException("Không tìm thấy học sinh"));
+
+        Lop lop = hocSinh.getLop();
+
+        // 1. Delete all related scores in ChiTietDiem
+        chiTietDiemRepository.deleteByHocSinh_IdHocSinh(idHocSinh);
+
+        // 2. Delete the student
+        hocSinhRepository.delete(hocSinh);
+
+        // 3. Update class size
+        if (lop != null) {
+            lop.setSiSo((int) hocSinhRepository.countByLop_IdLop(lop.getIdLop()));
+            lopRepository.save(lop);
+        }
+    }
+
+    @Override
+    public boolean hasScores(String idHocSinh) {
+        return chiTietDiemRepository.existsByHocSinh_IdHocSinh(idHocSinh);
+    }
+
+    private void validateEmail(String email) {
+        if (email != null && !email.trim().isEmpty()) {
+            String trimmed = email.trim();
+            if (!trimmed.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
+                throw new BusinessException("Email không hợp lệ");
+            }
+        }
+    }
+
+    private synchronized String generateNextId() {
+        List<HocSinh> list = hocSinhRepository.findAll();
+        int maxNum = 0;
+        for (HocSinh hs : list) {
+            String id = hs.getIdHocSinh();
+            if (id != null && id.toUpperCase().startsWith("HS")) {
+                try {
+                    int num = Integer.parseInt(id.substring(2).trim());
+                    if (num > maxNum) {
+                        maxNum = num;
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignore invalid suffix
+                }
+            }
+        }
+        int nextNum = maxNum + 1;
+        return String.format("HS%03d", nextNum);
     }
 }

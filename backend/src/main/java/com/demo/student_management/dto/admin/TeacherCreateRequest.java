@@ -9,16 +9,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GiaoVienResponse {
+public class TeacherCreateRequest {
     private String idGiaoVien;
-    private String tenGiaoVien;
+    private String ten;
     private String tenDangNhap;
-    private String sdt;
-    private String email;
+    private String matKhau;
     private String gioiTinh;
+    private String email;
+    private String sdt;
     private String idLop;
-    private String tenLop;
     private String idMonHoc;
-    private String tenMonHoc;
     private Boolean active;
 }

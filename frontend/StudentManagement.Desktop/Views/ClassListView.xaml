@@ -114,7 +114,7 @@
                             <DataGridTemplateColumn Header="Thao tác" Width="180">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Content="Xem chi tiết 🔎"
+                                        <Button Content="Xem chi tiết"
                                                 Command="{Binding DataContext.ViewDetailsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}"
                                                 Background="#3B82F6"
@@ -139,7 +139,7 @@
                     <StackPanel VerticalAlignment="Center" 
                                 HorizontalAlignment="Center"
                                 Visibility="{Binding ClassList.Count, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverted}">
-                        <TextBlock Text="📭 Không có lớp học nào"
+                        <TextBlock Text="Không có lớp học nào"
                                    FontSize="16"
                                    FontWeight="SemiBold"
                                    Foreground="#94A3B8"

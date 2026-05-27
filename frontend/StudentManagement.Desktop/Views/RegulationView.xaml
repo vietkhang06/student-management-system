@@ -102,7 +102,8 @@
         <!-- Refresh button -->
         <Style x:Key="RefreshBtn" TargetType="Button">
             <Setter Property="Height" Value="38"/>
-            <Setter Property="Padding" Value="16,0"/>
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="Padding" Value="16,16, 16, 16"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Background" Value="#F1F5F9"/>
@@ -149,18 +150,18 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel>
-                    <TextBlock Text="⚙️ Quy định hệ thống"
-                               FontSize="24" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="Quản lý các tham số QĐ1 – QĐ6: độ tuổi, sĩ số, môn học, điểm đạt"
-                               FontSize="13" Foreground="#64748B" Margin="0,6,0,0"/>
+                <StackPanel Height="40">
+                    <TextBlock Text="Quy định hệ thống"
+                               FontSize="24" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center"/>
                 </StackPanel>
 
                 <Button Grid.Column="1"
-                        Content="🔄 Làm mới"
+                        Content="Làm mới"
                         Command="{Binding RefreshCommand}"
                         Style="{StaticResource RefreshBtn}"
-                        VerticalAlignment="Center"/>
+                        VerticalAlignment="Center"
+              
+                        />
             </Grid>
         </Border>
 
@@ -170,11 +171,7 @@
                 BorderThickness="1" CornerRadius="8"
                 Padding="16,12" Margin="0,0,0,16">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="⚡ " FontSize="14"/>
-                <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#92400E">
-                    <Run FontWeight="Bold">Chỉ Ban Quản Lý mới có thể thay đổi quy định.</Run>
-                    <Run>Mọi thay đổi sẽ áp dụng ngay cho toàn hệ thống — kiểm tra tuổi, sĩ số, điểm đạt sẽ dùng giá trị mới.</Run>
-                </TextBlock>
+                <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#92400E"><Run FontWeight="Bold" Text="Chỉ Ban Quản Lý mới có thể thay đổi quy định."/><Run Text=" "/><Run Text="Mọi thay đổi sẽ áp dụng ngay cho toàn hệ thống — kiểm tra tuổi, sĩ số, điểm đạt sẽ dùng giá trị mới."/></TextBlock>
             </StackPanel>
         </Border>
 

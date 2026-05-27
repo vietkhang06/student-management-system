@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:StudentManagement.Desktop.ViewModels"
              mc:Ignorable="d"
-             d:DesignHeight="700" d:DesignWidth="1000"
+             d:DesignHeight="750" d:DesignWidth="1000"
              d:DataContext="{d:DesignInstance Type=vm:SystemAdminViewModel}">
 
     <UserControl.Resources>
@@ -18,6 +18,16 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="Padding" Value="16,14"/>
+            <Setter Property="Margin" Value="0,0,16,0"/>
+        </Style>
+
+        <!-- Profile / Health Detail Card -->
+        <Style x:Key="DetailCard" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="24"/>
             <Setter Property="Margin" Value="0,0,16,0"/>
         </Style>
 
@@ -36,10 +46,11 @@
         <!-- Form Button Style -->
         <Style x:Key="FormBtn" TargetType="Button">
             <Setter Property="Height" Value="38"/>
+            <Setter Property="Width" Value="98"/>
             <Setter Property="Padding" Value="18,0"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Background" Value="#2563EB"/>
+            <Setter Property="Background" Value="#0F172A"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -120,15 +131,64 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <!-- Custom TabControl Style -->
+        <Style TargetType="TabControl">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        
+        <!-- Custom TabItem Style -->
+        <Style TargetType="TabItem">
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <ContentPresenter Content="{TemplateBinding Content}" Margin="4,2"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Padding" Value="18,12"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0,0,0,2"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="Border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter x:Name="ContentSite"
+                                              ContentSource="Header"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="BorderBrush" Value="#0F172A"/>
+                                <Setter Property="Foreground" Value="#0F172A"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E2E8F0"/>
+                                <Setter Property="Foreground" Value="#0F172A"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
 
     <Grid Margin="32">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>  <!-- Header -->
-            <RowDefinition Height="Auto"/>  <!-- Stat cards -->
-            <RowDefinition Height="Auto"/>  <!-- Assignment Add Form -->
-            <RowDefinition Height="Auto"/>  <!-- Status loading -->
-            <RowDefinition Height="*"/>     <!-- Assignments Table -->
+            <RowDefinition Height="Auto"/>  <!-- Status/Progress -->
+            <RowDefinition Height="*"/>     <!-- Tabs Content -->
         </Grid.RowDefinitions>
 
         <!-- ── Page Header ─────────────────────────────────────────────── -->
@@ -143,14 +203,12 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="🛠️ Quản trị hệ thống"
+                    <TextBlock Text="Quản trị hệ thống"
                                FontSize="24" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="Tổng quan hệ thống và phân công giảng dạy cho giáo viên"
-                               FontSize="13" Foreground="#64748B" Margin="0,6,0,0"/>
                 </StackPanel>
 
                 <Button Grid.Column="1"
-                        Content="🔄 Làm mới"
+                        Content="Làm mới"
                         Command="{Binding RefreshCommand}"
                         Background="#F1F5F9" Foreground="#475569"
                         BorderBrush="#CBD5E1" BorderThickness="1"
@@ -165,117 +223,8 @@
             </Grid>
         </Border>
 
-        <!-- ── Statistics Cards ────────────────────────────────────────── -->
-        <Grid Grid.Row="1" Margin="0,0,0,16">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <!-- Students -->
-            <Border Grid.Column="0" Style="{StaticResource StatCard}">
-                <StackPanel>
-                    <TextBlock Text="Học sinh" FontSize="12" FontWeight="SemiBold" Foreground="#64748B"/>
-                    <TextBlock Text="{Binding TotalStudents}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,0"/>
-                </StackPanel>
-            </Border>
-
-            <!-- Classes -->
-            <Border Grid.Column="1" Style="{StaticResource StatCard}">
-                <StackPanel>
-                    <TextBlock Text="Lớp học" FontSize="12" FontWeight="SemiBold" Foreground="#64748B"/>
-                    <TextBlock Text="{Binding TotalClasses}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,0"/>
-                </StackPanel>
-            </Border>
-
-            <!-- Teachers -->
-            <Border Grid.Column="2" Style="{StaticResource StatCard}">
-                <StackPanel>
-                    <TextBlock Text="Giáo viên" FontSize="12" FontWeight="SemiBold" Foreground="#64748B"/>
-                    <TextBlock Text="{Binding TotalTeachers}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,0"/>
-                </StackPanel>
-            </Border>
-
-            <!-- Subjects -->
-            <Border Grid.Column="3" Style="{StaticResource StatCard}" Margin="0">
-                <StackPanel>
-                    <TextBlock Text="Môn học" FontSize="12" FontWeight="SemiBold" Foreground="#64748B"/>
-                    <TextBlock Text="{Binding TotalSubjects}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,0"/>
-                </StackPanel>
-            </Border>
-        </Grid>
-
-        <!-- ── Add Assignment Form ────────────────────────────────────── -->
-        <Border Grid.Row="2"
-                Background="White" BorderBrush="#E2E8F0"
-                BorderThickness="1" CornerRadius="10"
-                Padding="20,16" Margin="0,0,0,16">
-            <StackPanel>
-                <TextBlock Text="➕ Thêm phân công giảng dạy" FontSize="15" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,12"/>
-                
-                <StackPanel Orientation="Horizontal">
-                    <!-- Giáo viên -->
-                    <StackPanel Margin="0,0,12,0">
-                        <TextBlock Text="Giáo viên" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,4"/>
-                        <ComboBox ItemsSource="{Binding Teachers}"
-                                  SelectedItem="{Binding SelectedTeacher}"
-                                  DisplayMemberPath="TenGiaoVien"
-                                  Style="{StaticResource FormCombo}"
-                                  Width="180"/>
-                    </StackPanel>
-
-                    <!-- Lớp học -->
-                    <StackPanel Margin="0,0,12,0">
-                        <TextBlock Text="Lớp học" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,4"/>
-                        <ComboBox ItemsSource="{Binding Classes}"
-                                  SelectedItem="{Binding SelectedClass}"
-                                  DisplayMemberPath="TenLop"
-                                  Style="{StaticResource FormCombo}"
-                                  Width="130"/>
-                    </StackPanel>
-
-                    <!-- Môn học -->
-                    <StackPanel Margin="0,0,12,0">
-                        <TextBlock Text="Môn học" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,4"/>
-                        <ComboBox ItemsSource="{Binding Subjects}"
-                                  SelectedItem="{Binding SelectedSubject}"
-                                  DisplayMemberPath="TenMonHoc"
-                                  Style="{StaticResource FormCombo}"
-                                  Width="150"/>
-                    </StackPanel>
-
-                    <!-- Học kỳ -->
-                    <StackPanel Margin="0,0,16,0">
-                        <TextBlock Text="Học kỳ" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,4"/>
-                        <ComboBox ItemsSource="{Binding Terms}"
-                                  SelectedItem="{Binding SelectedTerm}"
-                                  Style="{StaticResource FormCombo}"
-                                  Width="180">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock>
-                                        <Run Text="{Binding TenHocKy}"/>
-                                        <Run Text=" — "/>
-                                        <Run Text="{Binding NamHoc}"/>
-                                    </TextBlock>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                    </StackPanel>
-
-                    <!-- Submit -->
-                    <Button Content="Phân công"
-                            Command="{Binding AddAssignmentCommand}"
-                            Style="{StaticResource FormBtn}"
-                            VerticalAlignment="Bottom"/>
-                </StackPanel>
-            </StackPanel>
-        </Border>
-
         <!-- ── Status Message / Loading ───────────────────────────────── -->
-        <Grid Grid.Row="3" Margin="0,0,0,12">
+        <Grid Grid.Row="1" Margin="0,0,0,12">
             <ProgressBar IsIndeterminate="True" Height="5"
                           Visibility="{Binding IsLoading, Converter={StaticResource BoolVis}}"/>
             <TextBlock Text="{Binding StatusMessage}"
@@ -284,88 +233,636 @@
                        Visibility="{Binding StatusMessage, Converter={StaticResource BoolVis}}"/>
         </Grid>
 
-        <!-- ── Assignments List Grid ──────────────────────────────────── -->
-        <Border Grid.Row="4" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10">
-            <DataGrid ItemsSource="{Binding Assignments}"
-                      AutoGenerateColumns="False"
-                      IsReadOnly="True"
-                      CanUserAddRows="False"
-                      CanUserDeleteRows="False"
-                      GridLinesVisibility="Horizontal"
-                      BorderThickness="0"
-                      Background="Transparent"
-                      RowHeight="46"
-                      HeadersVisibility="Column"
-                      VerticalScrollBarVisibility="Auto">
+        <!-- ── Navigation Tabs ────────────────────────────────────────── -->
+        <TabControl Grid.Row="2">
+            <!-- ── TAB 1: TỔNG QUAN & HỆ THỐNG ────────────────────────── -->
+            <TabItem Header="Tổng quan &amp; Hệ thống">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="0,16,0,0">
+                        <!-- Stats Grid -->
+                        <Grid Margin="0,0,0,24">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                <DataGrid.Columns>
-                    <!-- ID -->
-                    <DataGridTextColumn Header="Mã phân công" Binding="{Binding IdPhanCong}" Width="150">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="FontFamily" Value="Consolas"/>
-                                <Setter Property="FontSize" Value="11"/>
-                                <Setter Property="Foreground" Value="#64748B"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
+                            <!-- Students -->
+                            <Border Grid.Column="0" Style="{StaticResource StatCard}">
+                                <StackPanel>
+                                    <TextBlock Text="Học sinh" FontSize="12" FontWeight="SemiBold" Foreground="#64748B"/>
+                                    <TextBlock Text="{Binding TotalStudents}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
 
-                    <!-- Giáo viên -->
-                    <DataGridTextColumn Header="Giáo viên" Binding="{Binding TenGiaoVien}" Width="*">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="FontWeight" Value="SemiBold"/>
-                                <Setter Property="Foreground" Value="#1E293B"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
+                            <!-- Classes -->
+                            <Border Grid.Column="1" Style="{StaticResource StatCard}">
+                                <StackPanel>
+                                    <TextBlock Text="Lớp học" FontSize="12" FontWeight="SemiBold" Foreground="#64748B"/>
+                                    <TextBlock Text="{Binding TotalClasses}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
 
-                    <!-- Lớp học -->
-                    <DataGridTextColumn Header="Lớp" Binding="{Binding TenLop}" Width="110">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Foreground" Value="#0F172A"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
+                            <!-- Teachers -->
+                            <Border Grid.Column="2" Style="{StaticResource StatCard}">
+                                <StackPanel>
+                                    <TextBlock Text="Giáo viên" FontSize="12" FontWeight="SemiBold" Foreground="#64748B"/>
+                                    <TextBlock Text="{Binding TotalTeachers}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
 
-                    <!-- Môn học -->
-                    <DataGridTextColumn Header="Môn học" Binding="{Binding TenMonHoc}" Width="150">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Foreground" Value="#0F172A"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
+                            <!-- Subjects -->
+                            <Border Grid.Column="3" Style="{StaticResource StatCard}" Margin="0">
+                                <StackPanel>
+                                    <TextBlock Text="Môn học" FontSize="12" FontWeight="SemiBold" Foreground="#64748B"/>
+                                    <TextBlock Text="{Binding TotalSubjects}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
 
-                    <!-- Học kỳ -->
-                    <DataGridTextColumn Header="Học kỳ" Binding="{Binding TenHocKy}" Width="180">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Foreground" Value="#475569"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
+                        <!-- Profile & Health Row -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                    <!-- Actions -->
-                    <DataGridTemplateColumn Header="Hành động" Width="100">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Content="Xóa"
-                                        Command="{Binding DataContext.DeleteAssignmentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                        CommandParameter="{Binding}"
-                                        Style="{StaticResource DeleteBtn}"
-                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Border>
+                            <!-- Admin Profile Card -->
+                            <Border Grid.Column="0" Style="{StaticResource DetailCard}">
+                                <StackPanel>
+                                    <TextBlock Text="Tài khoản Quản trị viên" FontSize="16" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,16"/>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Row 1: Username -->
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Tên đăng nhập:" FontSize="13" FontWeight="SemiBold" Foreground="#64748B" Margin="0,4,16,4"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding AdminProfile.TenDangNhap}" FontSize="13" Foreground="#0F172A" Margin="0,4,0,4"/>
+
+                                        <!-- Row 2: Role -->
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Loại tài khoản:" FontSize="13" FontWeight="SemiBold" Foreground="#64748B" Margin="0,4,16,4"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="Ban Quản Lý (Admin)" FontSize="13" Foreground="#0F172A" Margin="0,4,0,4"/>
+
+                                        <!-- Row 3: Full Name -->
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Họ và tên:" FontSize="13" FontWeight="SemiBold" Foreground="#64748B" Margin="0,4,16,4"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding AdminProfile.Ten}" FontSize="13" Foreground="#0F172A" Margin="0,4,0,4"/>
+
+                                        <!-- Row 4: Phone -->
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Số điện thoại:" FontSize="13" FontWeight="SemiBold" Foreground="#64748B" Margin="0,4,16,4"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding AdminProfile.Sdt}" FontSize="13" Foreground="#0F172A" Margin="0,4,0,4"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- System Health Card -->
+                            <Border Grid.Column="1" Style="{StaticResource DetailCard}" Margin="0">
+                                <StackPanel>
+                                    <TextBlock Text="Trạng thái hệ thống" FontSize="16" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,16"/>
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Row 1: Database Status -->
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Cơ sở dữ liệu (MySQL):" FontSize="13" FontWeight="SemiBold" Foreground="#64748B" Margin="0,4,16,4"/>
+                                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,4,0,4">
+                                            <Ellipse Width="10" Height="10" Fill="Green" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                            <TextBlock Text="{Binding Health.DatabaseStatus}" FontSize="13" FontWeight="SemiBold" Foreground="Green"/>
+                                        </StackPanel>
+
+                                        <!-- Row 2: JVM Version -->
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Phiên bản Java / JVM:" FontSize="13" FontWeight="SemiBold" Foreground="#64748B" Margin="0,4,16,4"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Health.JvmVersion}" FontSize="13" Foreground="#0F172A" Margin="0,4,0,4"/>
+
+                                        <!-- Row 3: Operating System -->
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Hệ điều hành máy chủ:" FontSize="13" FontWeight="SemiBold" Foreground="#64748B" Margin="0,4,16,4"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Health.OsName}" FontSize="13" Foreground="#0F172A" Margin="0,4,0,4"/>
+
+                                        <!-- Row 4: Memory Usage -->
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="JVM Memory (Used/Total):" FontSize="13" FontWeight="SemiBold" Foreground="#64748B" Margin="0,4,16,4"/>
+                                        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="0,4,0,4">
+                                            <TextBlock Text="{Binding Health.UsedMemoryBytes, StringFormat={}{0:N0}}" FontSize="13" Foreground="#0F172A"/>
+                                            <TextBlock Text=" / " FontSize="13" Foreground="#64748B"/>
+                                            <TextBlock Text="{Binding Health.TotalMemoryBytes, StringFormat={}{0:N0} bytes}" FontSize="13" Foreground="#0F172A"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ── TAB 2: PHÂN CÔNG GIẢNG DẠY ────────────────────────── -->
+            <TabItem Header="Phân công giảng dạy">
+                <Grid Margin="0,16,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>  <!-- Add Form -->
+                        <RowDefinition Height="*"/>     <!-- Assignments DataGrid -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Add Assignment Form -->
+                    <Border Grid.Row="0"
+                            Background="White" BorderBrush="#E2E8F0"
+                            BorderThickness="1" CornerRadius="10"
+                            Padding="20,16" Margin="0,0,0,16">
+                        <StackPanel>
+                            <TextBlock Text="Thêm phân công giảng dạy" FontSize="15" FontWeight="Bold" Foreground="#1E293B" Margin="0,0,0,12"/>
+                            
+                            <StackPanel Orientation="Horizontal">
+                                <!-- Giáo viên -->
+                                <StackPanel Margin="0,0,12,0">
+                                    <TextBlock Text="Giáo viên" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                    <ComboBox ItemsSource="{Binding Teachers}"
+                                              SelectedItem="{Binding SelectedTeacher}"
+                                              DisplayMemberPath="TenGiaoVien"
+                                              Style="{StaticResource FormCombo}"
+                                              Width="180"/>
+                                </StackPanel>
+
+                                <!-- Lớp học -->
+                                <StackPanel Margin="0,0,12,0">
+                                    <TextBlock Text="Lớp học" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                    <ComboBox ItemsSource="{Binding Classes}"
+                                              SelectedItem="{Binding SelectedClass}"
+                                              DisplayMemberPath="TenLop"
+                                              Style="{StaticResource FormCombo}"
+                                              Width="130"/>
+                                </StackPanel>
+
+                                <!-- Môn học -->
+                                <StackPanel Margin="0,0,12,0">
+                                    <TextBlock Text="Môn học" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                    <ComboBox ItemsSource="{Binding Subjects}"
+                                              SelectedItem="{Binding SelectedSubject}"
+                                              DisplayMemberPath="TenMonHoc"
+                                              Style="{StaticResource FormCombo}"
+                                              Width="150"/>
+                                </StackPanel>
+
+                                <!-- Học kỳ -->
+                                <StackPanel Margin="0,0,16,0">
+                                    <TextBlock Text="Học kỳ" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,4"/>
+                                    <ComboBox ItemsSource="{Binding Terms}"
+                                              SelectedItem="{Binding SelectedTerm}"
+                                              Style="{StaticResource FormCombo}"
+                                              Width="180">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock>
+                                                    <Run Text="{Binding TenHocKy}"/>
+                                                    <Run Text=" — "/>
+                                                    <Run Text="{Binding NamHoc}"/>
+                                                </TextBlock>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <!-- Submit -->
+                                <Button Content="Phân công"
+                                        Command="{Binding AddAssignmentCommand}"
+                                        Style="{StaticResource FormBtn}"
+                                        VerticalAlignment="Bottom"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Assignments List Grid -->
+                    <Border Grid.Row="1" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10">
+                        <DataGrid ItemsSource="{Binding Assignments}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  GridLinesVisibility="Horizontal"
+                                  BorderThickness="0"
+                                  Background="Transparent"
+                                  RowHeight="46"
+                                  HeadersVisibility="Column"
+                                  VerticalScrollBarVisibility="Auto">
+
+                            <DataGrid.Columns>
+                                <!-- ID -->
+                                <DataGridTextColumn Header="Mã phân công" Binding="{Binding IdPhanCong}" Width="150">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontFamily" Value="Consolas"/>
+                                            <Setter Property="FontSize" Value="11"/>
+                                            <Setter Property="Foreground" Value="#64748B"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Giáo viên -->
+                                <DataGridTextColumn Header="Giáo viên" Binding="{Binding TenGiaoVien}" Width="*">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                            <Setter Property="Foreground" Value="#1E293B"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Lớp học -->
+                                <DataGridTextColumn Header="Lớp" Binding="{Binding TenLop}" Width="110">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="#0F172A"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Môn học -->
+                                <DataGridTextColumn Header="Môn học" Binding="{Binding TenMonHoc}" Width="150">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="#0F172A"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Học kỳ -->
+                                <DataGridTextColumn Header="Học kỳ" Binding="{Binding TenHocKy}" Width="180">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="#475569"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Actions -->
+                                <DataGridTemplateColumn Header="Hành động" Width="100">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Xóa"
+                                                    Command="{Binding DataContext.DeleteAssignmentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DeleteBtn}"
+                                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <!-- ── TAB 3: TÀI KHOẢN GIÁO VIÊN ────────────────────────── -->
+            <TabItem Header="Tài khoản giáo viên">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <DockPanel Grid.Row="0" Margin="0,16,0,12" LastChildFill="False">
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                            <TextBlock Text="Tìm kiếm:" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,8,0"/>
+                            <TextBox Text="{Binding TeacherSearchText, UpdateSourceTrigger=PropertyChanged}"
+                                     Width="280" Height="36" VerticalContentAlignment="Center" Padding="10,0"
+                                     BorderBrush="#CBD5E1" BorderThickness="1" Background="White" FontSize="13">
+                                <TextBox.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="6"/>
+                                    </Style>
+                                </TextBox.Resources>
+                            </TextBox>
+                            <TextBlock Text="💡 Gõ để tìm theo tên, mã, email, sđt..." VerticalAlignment="Center" FontSize="12" Foreground="#94A3B8" Margin="12,0,0,0"/>
+                        </StackPanel>
+
+                        <Button Content="+ Thêm giáo viên"
+                                Command="{Binding CreateTeacherCommand}"
+                                Style="{StaticResource FormBtn}"
+                                Width="145" Height="36"
+                                DockPanel.Dock="Right"/>
+                    </DockPanel>
+
+                    <Border Grid.Row="1" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10">
+                        <DataGrid ItemsSource="{Binding Teachers}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  GridLinesVisibility="Horizontal"
+                                  BorderThickness="0"
+                                  Background="Transparent"
+                                  RowHeight="46"
+                                  HeadersVisibility="Column"
+                                  VerticalScrollBarVisibility="Auto">
+
+                            <DataGrid.Columns>
+                                <!-- ID -->
+                                <DataGridTextColumn Header="Mã giáo viên" Binding="{Binding IdGiaoVien}" Width="110">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontFamily" Value="Consolas"/>
+                                            <Setter Property="FontSize" Value="11"/>
+                                            <Setter Property="Foreground" Value="#64748B"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Full Name -->
+                                <DataGridTextColumn Header="Họ và tên" Binding="{Binding TenGiaoVien}" Width="*">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                            <Setter Property="Foreground" Value="#1E293B"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Username -->
+                                <DataGridTextColumn Header="Tên đăng nhập" Binding="{Binding TenDangNhap}" Width="120">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="#0F172A"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Gender -->
+                                <DataGridTextColumn Header="Giới tính" Binding="{Binding GioiTinh}" Width="80">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="#0F172A"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Email -->
+                                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="160">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="#475569"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Phone -->
+                                <DataGridTextColumn Header="Số điện thoại" Binding="{Binding Sdt}" Width="110">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="#475569"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Subject -->
+                                <DataGridTextColumn Header="Môn giảng dạy" Binding="{Binding TenMonHoc}" Width="130">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="#0F172A"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Class -->
+                                <DataGridTextColumn Header="Lớp" Binding="{Binding TenLop}" Width="100">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="#0F172A"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Status -->
+                                <DataGridTemplateColumn Header="Trạng thái" Width="120">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border CornerRadius="12" Padding="8,4" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Active}" Value="True">
+                                                                <Setter Property="Background" Value="#DCFCE7"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Active}" Value="False">
+                                                                <Setter Property="Background" Value="#FEE2E2"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <TextBlock FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Active}" Value="True">
+                                                                    <Setter Property="Text" Value="Hoạt động"/>
+                                                                    <Setter Property="Foreground" Value="#15803D"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Active}" Value="False">
+                                                                    <Setter Property="Text" Value="Tạm khóa"/>
+                                                                    <Setter Property="Foreground" Value="#B91C1C"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <!-- Actions -->
+                                <DataGridTemplateColumn Header="Hành động" Width="130">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <Button Content="Sửa"
+                                                        Command="{Binding DataContext.EditTeacherCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding}"
+                                                        Width="50" Height="26" Margin="0,0,6,0"
+                                                        Background="#F1F5F9" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1"
+                                                        FontWeight="SemiBold" FontSize="11" Cursor="Hand">
+                                                    <Button.Resources>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="CornerRadius" Value="4"/>
+                                                        </Style>
+                                                    </Button.Resources>
+                                                </Button>
+                                                <Button Content="Xóa"
+                                                        Command="{Binding DataContext.DeleteTeacherCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding}"
+                                                        Style="{StaticResource DeleteBtn}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <!-- ── TAB 5: DANH SÁCH MÔN HỌC ────────────────────────── -->
+            <TabItem Header="Danh sách môn học">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <DockPanel Grid.Row="0" Margin="0,16,0,12" LastChildFill="False">
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                            <TextBlock Text="Tìm kiếm:" VerticalAlignment="Center" FontSize="13" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,8,0"/>
+                            <TextBox Text="{Binding SubjectSearchText, UpdateSourceTrigger=PropertyChanged}"
+                                     Width="280" Height="36" VerticalContentAlignment="Center" Padding="10,0"
+                                     BorderBrush="#CBD5E1" BorderThickness="1" Background="White" FontSize="13">
+                                <TextBox.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="6"/>
+                                    </Style>
+                                </TextBox.Resources>
+                            </TextBox>
+                            <TextBlock Text="💡 Gõ để tìm theo tên, mã môn học..." VerticalAlignment="Center" FontSize="12" Foreground="#94A3B8" Margin="12,0,0,0"/>
+                        </StackPanel>
+
+                        <Button Content="+ Thêm môn học"
+                                Command="{Binding CreateSubjectCommand}"
+                                Style="{StaticResource FormBtn}"
+                                Width="145" Height="36"
+                                DockPanel.Dock="Right"/>
+                    </DockPanel>
+
+                    <Border Grid.Row="1" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10">
+                        <DataGrid ItemsSource="{Binding Subjects}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  GridLinesVisibility="Horizontal"
+                                  BorderThickness="0"
+                                  Background="Transparent"
+                                  RowHeight="46"
+                                  HeadersVisibility="Column"
+                                  VerticalScrollBarVisibility="Auto">
+
+                            <DataGrid.Columns>
+                                <!-- ID -->
+                                <DataGridTextColumn Header="Mã môn học" Binding="{Binding IdMonHoc}" Width="150">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontFamily" Value="Consolas"/>
+                                            <Setter Property="FontSize" Value="11"/>
+                                            <Setter Property="Foreground" Value="#64748B"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Subject Name -->
+                                <DataGridTextColumn Header="Tên môn học" Binding="{Binding TenMonHoc}" Width="*">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                            <Setter Property="Foreground" Value="#1E293B"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Status -->
+                                <DataGridTemplateColumn Header="Trạng thái" Width="140">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border CornerRadius="12" Padding="8,4" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding TrangThaiSuDung}" Value="True">
+                                                                <Setter Property="Background" Value="#DCFCE7"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding TrangThaiSuDung}" Value="False">
+                                                                <Setter Property="Background" Value="#FEE2E2"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <TextBlock FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding TrangThaiSuDung}" Value="True">
+                                                                    <Setter Property="Text" Value="Đang sử dụng"/>
+                                                                    <Setter Property="Foreground" Value="#15803D"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding TrangThaiSuDung}" Value="False">
+                                                                    <Setter Property="Text" Value="Tạm ngưng"/>
+                                                                    <Setter Property="Foreground" Value="#B91C1C"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <!-- Actions -->
+                                <DataGridTemplateColumn Header="Hành động" Width="130">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <Button Content="Sửa"
+                                                        Command="{Binding DataContext.EditSubjectCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding}"
+                                                        Width="50" Height="26" Margin="0,0,6,0"
+                                                        Background="#F1F5F9" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1"
+                                                        FontWeight="SemiBold" FontSize="11" Cursor="Hand">
+                                                    <Button.Resources>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="CornerRadius" Value="4"/>
+                                                        </Style>
+                                                    </Button.Resources>
+                                                </Button>
+                                                <Button Content="Xóa"
+                                                        Command="{Binding DataContext.DeleteSubjectCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                        CommandParameter="{Binding}"
+                                                        Style="{StaticResource DeleteBtn}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>

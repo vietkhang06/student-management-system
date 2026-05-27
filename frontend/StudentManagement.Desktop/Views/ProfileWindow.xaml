@@ -68,8 +68,8 @@
                 <Border Height="120" CornerRadius="15,15,0,0">
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#2563EB" Offset="0.0"/>
-                            <GradientStop Color="#1D4ED8" Offset="1.0"/>
+                            <GradientStop Color="#0F172A" Offset="0.0"/>
+                            <GradientStop Color="#0F172A" Offset="1.0"/>
                         </LinearGradientBrush>
                     </Border.Background>
                 </Border>
@@ -186,7 +186,7 @@
                         Click="Close_Click"
                         Width="100" Height="36"
                         HorizontalAlignment="Right"
-                        Background="#2563EB" Foreground="White"
+                        Background="#0F172A" Foreground="White"
                         FontWeight="Bold" FontSize="13"
                         BorderThickness="0" Cursor="Hand">
                     <Button.Resources>

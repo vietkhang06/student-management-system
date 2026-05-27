@@ -14,7 +14,7 @@ import lombok.*;
 public class ThamSo {
 
     @Id
-    @Column(name = "ID_THAMSO", length = 5, nullable = false)
+    @Column(name = "ID_THAMSO", columnDefinition = "char(5)", nullable = false)
     @EqualsAndHashCode.Include
     private String idThamSo;
 

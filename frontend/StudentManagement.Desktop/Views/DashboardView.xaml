@@ -94,32 +94,26 @@
             <!-- Card 1: Student List -->
             <Button Style="{StaticResource CardButtonStyle}"
                     Command="{Binding DataContext.NavigateToStudentListCommand, RelativeSource={RelativeSource AncestorType=Window}}">
-                <StackPanel>
-                    <TextBlock Text="🔍 Tra cứu học sinh"
-                               FontSize="20"
+                <StackPanel Height="50">
+                    <TextBlock Text="Tra cứu học sinh"
+                               FontSize="25"
                                FontWeight="SemiBold"
-                               Foreground="#0F172A" />
-                    <TextBlock Text="Xem danh sách toàn trường, tìm kiếm học sinh theo họ tên hoặc lớp, xem điểm trung bình học tập các học kỳ."
-                               Foreground="#64748B"
-                               TextWrapping="Wrap"
-                               Margin="0,10,0,0"
-                               FontSize="14" />
+                               Foreground="#0F172A" 
+                               TextAlignment="Center"
+                   />
                 </StackPanel>
             </Button>
 
             <!-- Card 2: Class List -->
             <Button Style="{StaticResource CardButtonStyle}"
                     Command="{Binding DataContext.NavigateToClassListCommand, RelativeSource={RelativeSource AncestorType=Window}}">
-                <StackPanel>
-                    <TextBlock Text="🏫 Danh sách lớp"
-                               FontSize="20"
+                <StackPanel Height="50">
+                    <TextBlock Text="Danh sách lớp"
+                               FontSize="25"
                                FontWeight="SemiBold"
-                               Foreground="#0F172A" />
-                    <TextBlock Text="Danh sách lớp học, quản lý sĩ số, xem danh sách chi tiết từng lớp và thông tin hồ sơ của học sinh."
-                               Foreground="#64748B"
-                               TextWrapping="Wrap"
-                               Margin="0,10,0,0"
-                               FontSize="14" />
+                               Foreground="#0F172A" 
+                               TextAlignment="Center"/>
+                   
                 </StackPanel>
             </Button>
 
@@ -127,16 +121,13 @@
             <Button Style="{StaticResource CardButtonStyle}"
                     Command="{Binding DataContext.NavigateToScoresCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                     Visibility="{Binding CanAccessScores, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <StackPanel>
-                    <TextBlock Text="📝 Nhập bảng điểm"
-                               FontSize="20"
+                <StackPanel Height="50">
+                    <TextBlock Text="Nhập bảng điểm"
+                               FontSize="25"
                                FontWeight="SemiBold"
-                               Foreground="#0F172A" />
-                    <TextBlock Text="Nhập và cập nhật điểm 15 phút, 1 tiết, điểm thi và điểm trung bình môn học cho các học sinh."
-                               Foreground="#64748B"
-                               TextWrapping="Wrap"
-                               Margin="0,10,0,0"
-                               FontSize="14" />
+                               Foreground="#0F172A" 
+                               TextAlignment="Center"/>
+                   
                 </StackPanel>
             </Button>
 
@@ -144,16 +135,13 @@
             <Button Style="{StaticResource CardButtonStyle}"
                     Command="{Binding DataContext.NavigateToRegulationsCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                     Visibility="{Binding CanManageRegulations, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <StackPanel>
-                    <TextBlock Text="⚙️ Quy định hệ thống"
-                               FontSize="20"
+                <StackPanel Height="50">
+                    <TextBlock Text="Quy định hệ thống"
+                               FontSize="25"
                                FontWeight="SemiBold"
-                               Foreground="#0F172A" />
-                    <TextBlock Text="Thay đổi các tham số quy định: độ tuổi nhập học, sĩ số tối đa, danh sách môn học và điểm đạt chuẩn."
-                               Foreground="#64748B"
-                               TextWrapping="Wrap"
-                               Margin="0,10,0,0"
-                               FontSize="14" />
+                               Foreground="#0F172A" 
+                               TextAlignment="Center"/>
+                   
                 </StackPanel>
             </Button>
 

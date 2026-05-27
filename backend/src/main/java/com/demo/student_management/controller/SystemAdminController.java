@@ -1,12 +1,14 @@
 package com.demo.student_management.controller;
 
 import com.demo.student_management.dto.admin.*;
+import com.demo.student_management.dto.monhoc.MonHocResponse;
 import com.demo.student_management.entity.*;
 import com.demo.student_management.repository.*;
 import com.demo.student_management.security.AuthorizationService;
 import com.demo.student_management.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +26,9 @@ public class SystemAdminController {
     private final HocKyRepository hocKyRepository;
     private final PhanCongGiangDayRepository phanCongGiangDayRepository;
     private final AuthorizationService authorizationService;
+    private final TaiKhoanRepository taiKhoanRepository;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+    private final ChiTietDiemRepository chiTietDiemRepository;
 
     @GetMapping("/overview")
     public ResponseEntity<SystemOverviewResponse> getOverview() {
@@ -39,10 +44,7 @@ public class SystemAdminController {
                 .toList();
 
         List<GiaoVienResponse> teachers = giaoVienRepository.findAll().stream()
-                .map(gv -> GiaoVienResponse.builder()
-                        .idGiaoVien(gv.getIdGiaoVien())
-                        .tenGiaoVien(gv.getTaiKhoan().getTen() != null ? gv.getTaiKhoan().getTen() : gv.getTaiKhoan().getTenDangNhap())
-                        .build())
+                .map(this::mapToGiaoVienResponse)
                 .toList();
 
         return ResponseEntity.ok(SystemOverviewResponse.builder()
@@ -54,6 +56,253 @@ public class SystemAdminController {
                 .teachers(teachers)
                 .build());
     }
+
+    @GetMapping("/health")
+    public ResponseEntity<SystemHealthResponse> getHealth() {
+        authorizationService.requireAdmin();
+
+        String dbStatus = "UP";
+        try {
+            lopRepository.count();
+        } catch (Exception e) {
+            dbStatus = "DOWN: " + e.getMessage();
+        }
+
+        Runtime runtime = Runtime.getRuntime();
+        long totalMemory = runtime.totalMemory();
+        long freeMemory = runtime.freeMemory();
+        long usedMemory = totalMemory - freeMemory;
+        String jvmVersion = System.getProperty("java.version");
+        String osName = System.getProperty("os.name");
+
+        return ResponseEntity.ok(SystemHealthResponse.builder()
+                .databaseStatus(dbStatus)
+                .jvmVersion(jvmVersion)
+                .totalMemoryBytes(totalMemory)
+                .freeMemoryBytes(freeMemory)
+                .usedMemoryBytes(usedMemory)
+                .osName(osName)
+                .build());
+    }
+
+    // ── TEACHER CRUD ──────────────────────────────────────────────────────────
+
+    @GetMapping("/teachers")
+    public ResponseEntity<List<GiaoVienResponse>> getTeachers() {
+        authorizationService.requireAdmin();
+        List<GiaoVienResponse> list = giaoVienRepository.findAll().stream()
+                .map(this::mapToGiaoVienResponse)
+                .toList();
+        return ResponseEntity.ok(list);
+    }
+
+    @PostMapping("/teachers")
+    @org.springframework.transaction.annotation.Transactional
+    public ResponseEntity<GiaoVienResponse> createTeacher(@RequestBody TeacherCreateRequest request) {
+        authorizationService.requireAdmin();
+
+        if (request.getIdGiaoVien() == null || request.getIdGiaoVien().trim().isEmpty()) {
+            throw new BusinessException("Mã giáo viên không được để trống");
+        }
+        if (request.getTenDangNhap() == null || request.getTenDangNhap().trim().isEmpty()) {
+            throw new BusinessException("Tên đăng nhập không được để trống");
+        }
+        if (request.getMatKhau() == null || request.getMatKhau().trim().isEmpty()) {
+            throw new BusinessException("Mật khẩu không được để trống");
+        }
+
+        if (giaoVienRepository.existsById(request.getIdGiaoVien().trim())) {
+            throw new BusinessException("Mã giáo viên đã tồn tại");
+        }
+        if (taiKhoanRepository.existsByTenDangNhap(request.getTenDangNhap().trim())) {
+            throw new BusinessException("Tên đăng nhập đã tồn tại");
+        }
+
+        Lop lop = lopRepository.findById(request.getIdLop())
+                .orElseThrow(() -> new BusinessException("Không tìm thấy lớp học"));
+
+        MonHoc monHoc = null;
+        if (request.getIdMonHoc() != null && !request.getIdMonHoc().trim().isEmpty()) {
+            monHoc = monHocRepository.findById(request.getIdMonHoc())
+                    .orElseThrow(() -> new BusinessException("Không tìm thấy môn học"));
+        }
+
+        TaiKhoan tk = TaiKhoan.builder()
+                .idTaiKhoan(UUID.randomUUID().toString())
+                .tenDangNhap(request.getTenDangNhap().trim())
+                .matKhau(passwordEncoder.encode(request.getMatKhau()))
+                .hash(passwordEncoder.encode(request.getMatKhau()))
+                .loaiTaiKhoan("GIAOVIEN")
+                .ten(request.getTen())
+                .gioiTinh(request.getGioiTinh())
+                .email(request.getEmail())
+                .sdt(request.getSdt())
+                .active(request.getActive() != null ? request.getActive() : true)
+                .build();
+        tk = taiKhoanRepository.save(tk);
+
+        GiaoVien gv = GiaoVien.builder()
+                .idGiaoVien(request.getIdGiaoVien().trim())
+                .taiKhoan(tk)
+                .lop(lop)
+                .monHoc(monHoc)
+                .luong(0)
+                .build();
+        gv = giaoVienRepository.save(gv);
+
+        return ResponseEntity.ok(mapToGiaoVienResponse(gv));
+    }
+
+    @PutMapping("/teachers/{idGiaoVien}")
+    @org.springframework.transaction.annotation.Transactional
+    public ResponseEntity<GiaoVienResponse> updateTeacher(
+            @PathVariable String idGiaoVien,
+            @RequestBody TeacherUpdateRequest request) {
+        authorizationService.requireAdmin();
+
+        GiaoVien gv = giaoVienRepository.findById(idGiaoVien)
+                .orElseThrow(() -> new BusinessException("Không tìm thấy giáo viên"));
+
+        Lop lop = lopRepository.findById(request.getIdLop())
+                .orElseThrow(() -> new BusinessException("Không tìm thấy lớp học"));
+
+        MonHoc monHoc = null;
+        if (request.getIdMonHoc() != null && !request.getIdMonHoc().trim().isEmpty()) {
+            monHoc = monHocRepository.findById(request.getIdMonHoc())
+                    .orElseThrow(() -> new BusinessException("Không tìm thấy môn học"));
+        }
+
+        TaiKhoan tk = gv.getTaiKhoan();
+        tk.setTen(request.getTen());
+        tk.setGioiTinh(request.getGioiTinh());
+        tk.setEmail(request.getEmail());
+        tk.setSdt(request.getSdt());
+        if (request.getActive() != null) {
+            tk.setActive(request.getActive());
+        }
+
+        if (request.getMatKhau() != null && !request.getMatKhau().trim().isEmpty()) {
+            tk.setMatKhau(passwordEncoder.encode(request.getMatKhau()));
+            tk.setHash(passwordEncoder.encode(request.getMatKhau()));
+        }
+
+        taiKhoanRepository.save(tk);
+
+        gv.setLop(lop);
+        gv.setMonHoc(monHoc);
+        gv = giaoVienRepository.save(gv);
+
+        return ResponseEntity.ok(mapToGiaoVienResponse(gv));
+    }
+
+    @DeleteMapping("/teachers/{idGiaoVien}")
+    @org.springframework.transaction.annotation.Transactional
+    public ResponseEntity<Void> deleteTeacher(@PathVariable String idGiaoVien) {
+        authorizationService.requireAdmin();
+
+        GiaoVien gv = giaoVienRepository.findById(idGiaoVien)
+                .orElseThrow(() -> new BusinessException("Không tìm thấy giáo viên"));
+
+        com.demo.student_management.security.AuthenticatedUser currentUser = authorizationService.currentUser()
+                .orElseThrow(() -> new AccessDeniedException("Chưa đăng nhập"));
+
+        if (gv.getTaiKhoan().getIdTaiKhoan().equals(currentUser.idTaiKhoan())) {
+            throw new BusinessException("Không thể tự xóa tài khoản đang đăng nhập");
+        }
+
+        // Delete teaching assignments first
+        List<PhanCongGiangDay> pcList = phanCongGiangDayRepository.findByGiaoVien_IdGiaoVien(idGiaoVien);
+        if (!pcList.isEmpty()) {
+            phanCongGiangDayRepository.deleteAll(pcList);
+        }
+
+        // Now delete the teacher and account
+        TaiKhoan tk = gv.getTaiKhoan();
+        giaoVienRepository.delete(gv);
+        taiKhoanRepository.delete(tk);
+
+        return ResponseEntity.ok().build();
+    }
+
+    // ── SUBJECT CRUD ──────────────────────────────────────────────────────────
+
+    @GetMapping("/subjects")
+    public ResponseEntity<List<MonHocResponse>> getSubjects() {
+        authorizationService.requireAdmin();
+        List<MonHocResponse> list = monHocRepository.findAll().stream()
+                .map(m -> new MonHocResponse(m.getIdMonHoc(), m.getTenMonHoc(), m.getTrangThaiSuDung() != null ? m.getTrangThaiSuDung() : true))
+                .toList();
+        return ResponseEntity.ok(list);
+    }
+
+    @PostMapping("/subjects")
+    public ResponseEntity<MonHocResponse> createSubject(@RequestBody SubjectRequest request) {
+        authorizationService.requireAdmin();
+
+        if (request.getIdMonHoc() == null || request.getIdMonHoc().trim().isEmpty()) {
+            throw new BusinessException("Mã môn học không được để trống");
+        }
+        if (request.getTenMonHoc() == null || request.getTenMonHoc().trim().isEmpty()) {
+            throw new BusinessException("Tên môn học không được để trống");
+        }
+
+        if (monHocRepository.existsById(request.getIdMonHoc().trim())) {
+            throw new BusinessException("Mã môn học đã tồn tại");
+        }
+
+        MonHoc mh = MonHoc.builder()
+                .idMonHoc(request.getIdMonHoc().trim())
+                .tenMonHoc(request.getTenMonHoc().trim())
+                .trangThaiSuDung(request.getTrangThaiSuDung() != null ? request.getTrangThaiSuDung() : true)
+                .build();
+        mh = monHocRepository.save(mh);
+
+        return ResponseEntity.ok(new MonHocResponse(mh.getIdMonHoc(), mh.getTenMonHoc(), mh.getTrangThaiSuDung()));
+    }
+
+    @PutMapping("/subjects/{idMonHoc}")
+    public ResponseEntity<MonHocResponse> updateSubject(
+            @PathVariable String idMonHoc,
+            @RequestBody SubjectRequest request) {
+        authorizationService.requireAdmin();
+
+        MonHoc mh = monHocRepository.findById(idMonHoc)
+                .orElseThrow(() -> new BusinessException("Không tìm thấy môn học"));
+
+        if (request.getTenMonHoc() == null || request.getTenMonHoc().trim().isEmpty()) {
+            throw new BusinessException("Tên môn học không được để trống");
+        }
+
+        mh.setTenMonHoc(request.getTenMonHoc().trim());
+        if (request.getTrangThaiSuDung() != null) {
+            mh.setTrangThaiSuDung(request.getTrangThaiSuDung());
+        }
+
+        mh = monHocRepository.save(mh);
+        return ResponseEntity.ok(new MonHocResponse(mh.getIdMonHoc(), mh.getTenMonHoc(), mh.getTrangThaiSuDung()));
+    }
+
+    @DeleteMapping("/subjects/{idMonHoc}")
+    public ResponseEntity<Void> deleteSubject(@PathVariable String idMonHoc) {
+        authorizationService.requireAdmin();
+
+        if (!monHocRepository.existsById(idMonHoc)) {
+            throw new BusinessException("Không tìm thấy môn học");
+        }
+
+        // Prevent deletion if used in ChiTietDiem or PhanCongGiangDay
+        boolean usedInScores = chiTietDiemRepository.existsByMonHoc_IdMonHoc(idMonHoc);
+        boolean usedInAssignments = phanCongGiangDayRepository.existsByMonHoc_IdMonHoc(idMonHoc);
+
+        if (usedInScores || usedInAssignments) {
+            throw new BusinessException("Môn học đang được sử dụng trong bảng điểm hoặc phân công giảng dạy, không thể xóa");
+        }
+
+        monHocRepository.deleteById(idMonHoc);
+        return ResponseEntity.ok().build();
+    }
+
+    // ── ASSIGNMENTS ───────────────────────────────────────────────────────────
 
     @PostMapping("/assignment")
     public ResponseEntity<PhanCongResponse> addAssignment(@RequestBody PhanCongRequest request) {
@@ -98,6 +347,24 @@ public class SystemAdminController {
 
         phanCongGiangDayRepository.deleteById(idPhanCong);
         return ResponseEntity.ok().build();
+    }
+
+    // ── HELPERS ───────────────────────────────────────────────────────────────
+
+    private GiaoVienResponse mapToGiaoVienResponse(GiaoVien gv) {
+        return GiaoVienResponse.builder()
+                .idGiaoVien(gv.getIdGiaoVien())
+                .tenGiaoVien(gv.getTaiKhoan().getTen() != null ? gv.getTaiKhoan().getTen() : gv.getTaiKhoan().getTenDangNhap())
+                .tenDangNhap(gv.getTaiKhoan().getTenDangNhap())
+                .sdt(gv.getTaiKhoan().getSdt() != null ? gv.getTaiKhoan().getSdt() : "")
+                .email(gv.getTaiKhoan().getEmail() != null ? gv.getTaiKhoan().getEmail() : "")
+                .gioiTinh(gv.getTaiKhoan().getGioiTinh() != null ? gv.getTaiKhoan().getGioiTinh() : "")
+                .idLop(gv.getLop().getIdLop())
+                .tenLop(gv.getLop().getTenLop())
+                .idMonHoc(gv.getMonHoc() != null ? gv.getMonHoc().getIdMonHoc() : "")
+                .tenMonHoc(gv.getMonHoc() != null ? gv.getMonHoc().getTenMonHoc() : "Chưa phân công")
+                .active(gv.getTaiKhoan().getActive() != null ? gv.getTaiKhoan().getActive() : true)
+                .build();
     }
 
     private PhanCongResponse mapToPhanCongResponse(PhanCongGiangDay pc) {

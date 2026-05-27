@@ -10,4 +10,11 @@ import lombok.NoArgsConstructor;
 public class MonHocResponse {
     private String idMonHoc;
     private String tenMonHoc;
+    private Boolean trangThaiSuDung;
+
+    public MonHocResponse(String idMonHoc, String tenMonHoc) {
+        this.idMonHoc = idMonHoc;
+        this.tenMonHoc = tenMonHoc;
+        this.trangThaiSuDung = true;
+    }
 }

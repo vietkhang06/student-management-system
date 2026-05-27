@@ -176,7 +176,7 @@ public class AuthorizationService {
                 .orElseThrow(() -> new AccessDeniedException("Chua dang nhap"));
     }
 
-    private Optional<AuthenticatedUser> currentUser() {
+    public Optional<AuthenticatedUser> currentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof AuthenticatedUser user)) {
             return Optional.empty();

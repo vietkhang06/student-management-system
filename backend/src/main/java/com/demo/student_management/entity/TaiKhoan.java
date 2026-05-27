@@ -17,7 +17,7 @@ import java.time.LocalDate;
 public class TaiKhoan {
 
     @Id
-    @Column(name = "ID_TAIKHOAN", length = 36, nullable = false)
+    @Column(name = "ID_TAIKHOAN", columnDefinition = "char(36)", nullable = false)
     @EqualsAndHashCode.Include
     private String idTaiKhoan;
 
@@ -47,6 +47,13 @@ public class TaiKhoan {
 
     @Column(name = "SDT", length = 11)
     private String sdt;
+
+    @Column(name = "EMAIL", length = 255)
+    private String email;
+
+    @Column(name = "ACTIVE")
+    @Builder.Default
+    private Boolean active = true;
 
     @OneToOne(mappedBy = "taiKhoan", fetch = FetchType.LAZY)
     @JsonIgnore

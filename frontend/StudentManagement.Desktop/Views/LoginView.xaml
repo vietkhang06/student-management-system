@@ -33,19 +33,16 @@
             <ColumnDefinition Width="0.95*" />
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="#0F766E">
+        <Border Grid.Column="0" Background="#0F172A">
             <Grid Margin="56">
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="Quản lý học sinh"
+                    <TextBlock Text="Hệ thống quản lý học sinh"
                                Foreground="White"
                                FontSize="38"
                                FontWeight="Bold"
-                               TextWrapping="Wrap" />
-                    <TextBlock Text="Ứng dụng desktop WPF kết nối REST API"
-                               Foreground="#CCFBF1"
-                               FontSize="18"
-                               Margin="0,18,0,0"
-                               TextWrapping="Wrap" />
+                               TextWrapping="Wrap" 
+                               TextAlignment="Center"/>
+                    
                 </StackPanel>
             </Grid>
         </Border>
@@ -60,13 +57,11 @@
                     VerticalAlignment="Center">
                 <StackPanel>
                     <TextBlock Text="Đăng nhập"
-                               FontSize="28"
+                               FontSize="25"
                                FontWeight="Bold"
-                               Foreground="#0F172A" />
-                    <TextBlock Text="Sử dụng tài khoản Ban quản lý hoặc Giáo viên"
-                               FontSize="14"
-                               Foreground="#64748B"
-                               Margin="0,8,0,28" />
+                               Foreground="#0F172A" 
+                               TextAlignment="Center"
+                               Padding="10"/>
 
                     <TextBlock Text="Tên đăng nhập" Style="{StaticResource InputLabelStyle}" />
                     <TextBox Text="{Binding TenDangNhap, UpdateSourceTrigger=PropertyChanged}"
@@ -96,7 +91,7 @@
                             Command="{Binding LoginCommand}"
                             Height="44"
                             Margin="0,24,0,0"
-                            Background="#0F766E"
+                            Background="#0F172A"
                             Foreground="White"
                             BorderThickness="0"
                             FontSize="15"

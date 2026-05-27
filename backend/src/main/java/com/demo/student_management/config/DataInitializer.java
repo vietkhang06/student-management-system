@@ -42,8 +42,8 @@ public class DataInitializer implements CommandLineRunner {
         seedLop("L002", "10A2");
 
         seedAdmin("admin01", "Admin@123", "Nguyen Van Quan");
-        seedTeacher("gv01", "Gv@123456", "Le Thi Mai", "L001", "GV001");
-        seedTeacher("gv02", "Gv@123456", "Tran Van Nam", "L002", "GV002");
+        seedTeacher("gv01", "Gv@123456", "Le Thi Mai", "L001", "GV001", "MH001");
+        seedTeacher("gv02", "Gv@123456", "Tran Van Nam", "L002", "GV002", "MH002");
 
         // Seed teaching assignments: GV001 for L001, GV002 for L002 for all subjects & terms
         for (int i = 1; i <= 9; i++) {
@@ -78,6 +78,7 @@ public class DataInitializer implements CommandLineRunner {
                             .hash(passwordEncoder.encode(rawPassword))
                             .loaiTaiKhoan("BANQUANLY")
                             .ten(fullName)
+                            .active(true)
                             .build();
                     return taiKhoanRepository.save(newTk);
                 });
@@ -91,7 +92,7 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    private void seedTeacher(String username, String rawPassword, String fullName, String idLop, String idGiaoVien) {
+    private void seedTeacher(String username, String rawPassword, String fullName, String idLop, String idGiaoVien, String idMonHoc) {
         Lop lop = lopRepository.findById(idLop)
                 .orElseThrow(() -> new RuntimeException("Thiếu lớp " + idLop + " để seed giáo viên"));
 
@@ -104,15 +105,18 @@ public class DataInitializer implements CommandLineRunner {
                             .hash(passwordEncoder.encode(rawPassword))
                             .loaiTaiKhoan("GIAOVIEN")
                             .ten(fullName)
+                            .active(true)
                             .build();
                     return taiKhoanRepository.save(newTk);
                 });
 
         if (giaoVienRepository.findByTaiKhoan_IdTaiKhoan(tk.getIdTaiKhoan()).isEmpty()) {
+            MonHoc monHoc = monHocRepository.findById(idMonHoc).orElse(null);
             GiaoVien gv = GiaoVien.builder()
                     .idGiaoVien(idGiaoVien)
                     .lop(lop)
                     .taiKhoan(tk)
+                    .monHoc(monHoc)
                     .luong(0)
                     .build();
             giaoVienRepository.save(gv);

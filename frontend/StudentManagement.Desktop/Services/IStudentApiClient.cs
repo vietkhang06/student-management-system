@@ -12,4 +12,7 @@ public interface IStudentApiClient
     Task<List<HocSinhResponse>> SearchByNameAsync(string name, CancellationToken cancellationToken = default);
     Task<List<HocSinhSummaryResponse>> GetStudentSummariesAsync(CancellationToken cancellationToken = default);
     Task<HocSinhResponse> CreateAsync(HocSinhCreateRequest request, CancellationToken cancellationToken = default);
+    Task<HocSinhResponse> UpdateAsync(string id, HocSinhUpdateRequest request, CancellationToken cancellationToken = default);
+    Task DeleteAsync(string id, CancellationToken cancellationToken = default);
+    Task<bool> HasScoresAsync(string id, CancellationToken cancellationToken = default);
 }

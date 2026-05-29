@@ -188,7 +188,7 @@
                             Command="{Binding ResetCommand}"
                             Style="{StaticResource ActionBtnSecondary}"
                             Margin="0,0,8,0"/>
-                    <Button Content="↺ Tải lại"
+                    <Button Content="Tải lại"
                             Command="{Binding RefreshCommand}"
                             Style="{StaticResource ActionBtnSecondary}"/>
                 </StackPanel>

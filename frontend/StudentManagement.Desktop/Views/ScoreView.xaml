@@ -25,8 +25,8 @@
 
         <!-- Small inline save button -->
         <Style x:Key="SaveRowButton" TargetType="Button">
-            <Setter Property="Height" Value="28"/>
-            <Setter Property="Width" Value="60"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Width" Value="72"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Background" Value="#2563EB"/>
@@ -36,7 +36,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -59,22 +59,22 @@
             <Setter Property="Padding" Value="16,0"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Background" Value="#0F172A"/>
+            <Setter Property="Background" Value="#52e5b9"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="10">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#047857"/>
+                                <Setter Property="Background" Value="#42d4a8"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#6EE7B7"/>
+                                <Setter Property="Background" Value="#A7F3D0"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -148,6 +148,11 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <!-- Centered header style -->
+        <Style x:Key="CenteredHeader" TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
     </UserControl.Resources>
 
     <Grid Margin="32">
@@ -182,66 +187,74 @@
                 CornerRadius="10"
                 Padding="20,16"
                 Margin="0,0,0,16">
-            <StackPanel Orientation="Horizontal">
-
+            <StackPanel>
                 <!-- Filter loading spinner -->
-                <ProgressBar IsIndeterminate="True"
-                             Width="120" Height="8"
-                             VerticalAlignment="Center"
-                             Margin="0,0,16,0"
+                <ProgressBar IsIndeterminate="True" Height="5"
+                             Margin="0,0,0,12"
                              Visibility="{Binding IsLoadingFilters, Converter={StaticResource BoolVis}}"/>
 
-                <!-- Lớp -->
-                <StackPanel Margin="0,0,16,0">
-                    <TextBlock Text="Lớp" FontSize="12" FontWeight="SemiBold"
-                               Foreground="#64748B" Margin="0,0,0,4"/>
-                    <ComboBox ItemsSource="{Binding Classes}"
-                              SelectedItem="{Binding SelectedClass}"
-                              DisplayMemberPath="TenLop"
-                              Style="{StaticResource FilterCombo}"/>
-                </StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                <!-- Môn học -->
-                <StackPanel Margin="0,0,16,0">
-                    <TextBlock Text="Môn học" FontSize="12" FontWeight="SemiBold"
-                               Foreground="#64748B" Margin="0,0,0,4"/>
-                    <ComboBox ItemsSource="{Binding Subjects}"
-                              SelectedItem="{Binding SelectedSubject}"
-                              DisplayMemberPath="TenMonHoc"
-                              Style="{StaticResource FilterCombo}"/>
-                </StackPanel>
+                    <!-- Lớp -->
+                    <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                        <TextBlock Text="Lớp" FontSize="12" FontWeight="SemiBold"
+                                   Foreground="#64748B" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding Classes}"
+                                  SelectedItem="{Binding SelectedClass}"
+                                  DisplayMemberPath="TenLop"
+                                  Style="{StaticResource ModernComboBox}"/>
+                    </StackPanel>
 
-                <!-- Học kỳ -->
-                <StackPanel Margin="0,0,20,0">
-                    <TextBlock Text="Học kỳ" FontSize="12" FontWeight="SemiBold"
-                               Foreground="#64748B" Margin="0,0,0,4"/>
-                    <ComboBox ItemsSource="{Binding Terms}"
-                              SelectedItem="{Binding SelectedTerm}"
-                              Style="{StaticResource FilterCombo}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock>
-                                    <Run Text="{Binding TenHocKy}"/>
-                                    <Run Text=" — "/>
-                                    <Run Text="{Binding NamHoc}"/>
-                                </TextBlock>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                </StackPanel>
+                    <!-- Môn học -->
+                    <StackPanel Grid.Column="1" Margin="0,0,16,0">
+                        <TextBlock Text="Môn học" FontSize="12" FontWeight="SemiBold"
+                                   Foreground="#64748B" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding Subjects}"
+                                  SelectedItem="{Binding SelectedSubject}"
+                                  DisplayMemberPath="TenMonHoc"
+                                  Style="{StaticResource ModernComboBox}"/>
+                    </StackPanel>
 
-                <!-- Load button aligned bottom -->
-                <Button Content="Tải bảng điểm"
-                        Command="{Binding LoadScoresCommand}"
-                        Style="{StaticResource LoadButton}"
-                        VerticalAlignment="Bottom"/>
+                    <!-- Học kỳ -->
+                    <StackPanel Grid.Column="2" Margin="0,0,16,0">
+                        <TextBlock Text="Học kỳ" FontSize="12" FontWeight="SemiBold"
+                                   Foreground="#64748B" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding Terms}"
+                                  SelectedItem="{Binding SelectedTerm}"
+                                  Style="{StaticResource ModernComboBox}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <Run Text="{Binding TenHocKy}"/>
+                                        <Run Text=" — "/>
+                                        <Run Text="{Binding NamHoc}"/>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
 
-                <!-- Loading spinner for scores -->
-                <ProgressBar IsIndeterminate="True"
-                             Width="100" Height="8"
-                             VerticalAlignment="Bottom"
-                             Margin="16,0,0,14"
-                             Visibility="{Binding IsLoadingScores, Converter={StaticResource BoolVis}}"/>
+                    <!-- Actions -->
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom">
+                        <!-- Load button -->
+                        <Button Content="Tải bảng điểm"
+                                Command="{Binding LoadScoresCommand}"
+                                Style="{StaticResource LoadButton}"/>
+
+                        <!-- Loading spinner for scores -->
+                        <ProgressBar IsIndeterminate="True"
+                                     Width="80" Height="8"
+                                     VerticalAlignment="Center"
+                                     Margin="12,0,0,0"
+                                     Visibility="{Binding IsLoadingScores, Converter={StaticResource BoolVis}}"/>
+                    </StackPanel>
+                </Grid>
             </StackPanel>
         </Border>
 
@@ -325,29 +338,31 @@
                                             IsReadOnly="True"/>
 
                         <!-- Điểm 15' (editable) -->
-                        <DataGridTemplateColumn Header="Điểm 15'" Width="110">
+                        <DataGridTemplateColumn Header="Điểm 15'" Width="100" HeaderStyle="{StaticResource CenteredHeader}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBox Text="{Binding Diem15, UpdateSourceTrigger=PropertyChanged}"
                                              IsReadOnly="{Binding DataContext.IsReadOnlyScores, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                             Style="{StaticResource ScoreBox}"/>
+                                             Style="{StaticResource ScoreBox}"
+                                             HorizontalAlignment="Center"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
                         <!-- Điểm 1 tiết (editable) -->
-                        <DataGridTemplateColumn Header="Điểm 1 tiết" Width="110">
+                        <DataGridTemplateColumn Header="Điểm 1 tiết" Width="100" HeaderStyle="{StaticResource CenteredHeader}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBox Text="{Binding Diem45, UpdateSourceTrigger=PropertyChanged}"
                                              IsReadOnly="{Binding DataContext.IsReadOnlyScores, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                             Style="{StaticResource ScoreBox}"/>
+                                             Style="{StaticResource ScoreBox}"
+                                             HorizontalAlignment="Center"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
                         <!-- Điểm TB (read-only, computed by backend) -->
-                        <DataGridTemplateColumn Header="Điểm TB" Width="100">
+                        <DataGridTemplateColumn Header="Điểm TB" Width="90" HeaderStyle="{StaticResource CenteredHeader}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding DiemTb}"
@@ -360,10 +375,10 @@
                         </DataGridTemplateColumn>
 
                         <!-- Save / Status -->
-                        <DataGridTemplateColumn Header="Lưu" Width="120">
+                        <DataGridTemplateColumn Header="Lưu" Width="280">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0">
                                         <Button Content="💾 Lưu"
                                                 Command="{Binding DataContext.SaveRowCommand,
                                                           RelativeSource={RelativeSource AncestorType=DataGrid}}"
@@ -373,8 +388,18 @@
                                         <TextBlock Text="{Binding SaveStatus}"
                                                    FontSize="12"
                                                    Margin="6,0,0,0"
-                                                   VerticalAlignment="Center"
-                                                   Foreground="#16A34A"/>
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="#DC2626"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding SaveStatus}" Value="✅">
+                                                            <Setter Property="Foreground" Value="#16A34A"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>

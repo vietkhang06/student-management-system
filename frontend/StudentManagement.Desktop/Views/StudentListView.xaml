@@ -16,9 +16,9 @@
             <Setter Property="Foreground" Value="#0F172A" />
         </Style>
         <Style x:Key="ActionBtnPrimary" TargetType="Button">
-            <Setter Property="Height" Value="36"/>
+            <Setter Property="Height" Value="38"/>
             <Setter Property="Padding" Value="14,0"/>
-            <Setter Property="Background" Value="#0F172A"/>
+            <Setter Property="Background" Value="#52e5b9"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="13"/>
@@ -27,12 +27,12 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#1E293B"/>
+                                <Setter Property="Background" Value="#42d4a8"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Opacity" Value="0.5"/>
@@ -43,7 +43,7 @@
             </Setter>
         </Style>
         <Style x:Key="ActionBtnSecondary" TargetType="Button">
-            <Setter Property="Height" Value="36"/>
+            <Setter Property="Height" Value="38"/>
             <Setter Property="Padding" Value="14,0"/>
             <Setter Property="Background" Value="#F1F5F9"/>
             <Setter Property="Foreground" Value="#334155"/>
@@ -55,7 +55,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}"
+                        <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}"
                                 BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
@@ -150,8 +150,8 @@
                 Margin="0,0,0,16">
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="200" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
@@ -159,11 +159,7 @@
                 <StackPanel Grid.Column="0" Margin="0,0,16,0">
                     <TextBlock Text="Họ và tên" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,6" />
                     <TextBox Text="{Binding SearchName, UpdateSourceTrigger=PropertyChanged}"
-                             Height="38"
-                             Padding="10,0"
-                             VerticalContentAlignment="Center"
-                             BorderBrush="#CBD5E1"
-                             BorderThickness="1" />
+                             Style="{StaticResource ModernTextBox}" />
                 </StackPanel>
 
                 <!-- Filter Class -->
@@ -172,10 +168,7 @@
                     <ComboBox ItemsSource="{Binding ClassList}"
                               SelectedItem="{Binding SelectedClass}"
                               DisplayMemberPath="TenLop"
-                              Height="38"
-                              BorderBrush="#CBD5E1"
-                              BorderThickness="1"
-                              VerticalContentAlignment="Center"/>
+                              Style="{StaticResource ModernComboBox}"/>
                 </StackPanel>
 
                 <!-- Actions -->

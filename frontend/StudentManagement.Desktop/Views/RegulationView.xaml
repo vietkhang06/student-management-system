@@ -44,27 +44,42 @@
             </Style.Triggers>
         </Style>
 
+        <!-- Centered header style -->
+        <Style x:Key="CenteredHeader" TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
         <!-- Editable value TextBox -->
         <Style x:Key="ValueBox" TargetType="TextBox">
-            <Setter Property="Height" Value="32"/>
-            <Setter Property="MinWidth" Value="140"/>
-            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="Padding" Value="4,0"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Center"/>
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Background" Value="#F0F9FF"/>
-            <Setter Property="BorderBrush" Value="#BAE6FD"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
-                        <Border Background="{TemplateBinding Background}"
+                        <Border x:Name="border" Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="6">
+                                CornerRadius="8">
                             <ScrollViewer x:Name="PART_ContentHost"
                                           Padding="{TemplateBinding Padding}"
                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#CBD5E1"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#94A3B8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -72,7 +87,7 @@
 
         <!-- Save button -->
         <Style x:Key="SaveBtn" TargetType="Button">
-            <Setter Property="Height" Value="32"/>
+            <Setter Property="Height" Value="35"/>
             <Setter Property="Width" Value="72"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -83,7 +98,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -233,11 +248,11 @@
                     </DataGridTextColumn>
 
                     <!-- Type badge -->
-                    <DataGridTemplateColumn Header="Kiểu" Width="80" IsReadOnly="True">
+                    <DataGridTemplateColumn Header="Kiểu" Width="120" IsReadOnly="True" HeaderStyle="{StaticResource CenteredHeader}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Border CornerRadius="12" Padding="8,3"
-                                        HorizontalAlignment="Left">
+                                        HorizontalAlignment="Center">
                                     <Border.Style>
                                         <Style TargetType="Border">
                                             <Setter Property="Background" Value="#EDE9FE"/>
@@ -266,22 +281,23 @@
                     </DataGridTemplateColumn>
 
                     <!-- Editable value -->
-                    <DataGridTemplateColumn Header="Giá trị hiện tại" Width="200">
+                    <DataGridTemplateColumn Header="Giá trị hiện tại" Width="150" HeaderStyle="{StaticResource CenteredHeader}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBox Text="{Binding GiaTriThamSo, UpdateSourceTrigger=PropertyChanged}"
-                                         Style="{StaticResource ValueBox}"/>
+                                         Style="{StaticResource ValueBox}"
+                                         HorizontalAlignment="Center"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
                     <!-- Save + status -->
-                    <DataGridTemplateColumn Header="Lưu" Width="160">
+                    <DataGridTemplateColumn Header="Lưu" Width="190" HeaderStyle="{StaticResource CenteredHeader}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal"
                                             VerticalAlignment="Center"
-                                            HorizontalAlignment="Left">
+                                            HorizontalAlignment="Center">
                                     <Button Content="💾 Lưu"
                                             Command="{Binding DataContext.SaveRowCommand,
                                                       RelativeSource={RelativeSource AncestorType=DataGrid}}"

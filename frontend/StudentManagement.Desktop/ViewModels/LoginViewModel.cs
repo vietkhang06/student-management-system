@@ -29,6 +29,18 @@ public partial class LoginViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(LoginCommand))]
     private bool isBusy;
 
+    [ObservableProperty]
+    private bool isPasswordVisible;
+
+    [ObservableProperty]
+    private bool isRememberMeChecked;
+
+    [RelayCommand]
+    private void TogglePasswordVisibility()
+    {
+        IsPasswordVisible = !IsPasswordVisible;
+    }
+
     public LoginViewModel(
         IAuthApiClient authApiClient,
         IUserSessionService userSessionService,

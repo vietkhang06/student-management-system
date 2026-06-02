@@ -26,6 +26,7 @@ public partial class ReportView : UserControl
         BtnLoadSubject.Visibility      = Visibility.Visible;
         BtnLoadSemester.Visibility     = Visibility.Collapsed;
         SubjectFilterPanel.Visibility  = Visibility.Visible;
+        SubjectFilterCol.Width         = new GridLength(1, GridUnitType.Star);
     }
 
     private void TabSemesterClick(object sender, RoutedEventArgs e)
@@ -44,5 +45,6 @@ public partial class ReportView : UserControl
         BtnLoadSubject.Visibility      = Visibility.Collapsed;
         BtnLoadSemester.Visibility     = Visibility.Visible;
         SubjectFilterPanel.Visibility  = Visibility.Collapsed;
+        SubjectFilterCol.Width         = new GridLength(0);
     }
 }

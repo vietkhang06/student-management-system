@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:StudentManagement.Desktop.Controls"
-        Title="Đăng nhập"
+        Title="Hệ thống Quản lý Học sinh"
         Width="920"
         Height="560"
         MinWidth="760"
@@ -11,98 +11,243 @@
         Background="#F7FAFC">
 
     <Window.Resources>
-        <Style x:Key="InputLabelStyle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#334155" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Margin" Value="0,0,0,6" />
+        <!-- Custom Boolean to Visibility Converter supporting Inversion -->
+        <controls:BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+
+        <SolidColorBrush x:Key="PrimaryColor" Color="#102f76"/>
+        <SolidColorBrush x:Key="SecondaryColor" Color="#4285F4"/>
+        <SolidColorBrush x:Key="GrayText" Color="#777"/>
+        <SolidColorBrush x:Key="InputBackground" Color="#F5F7FA"/>
+
+        <!-- SVG Icon Geometries -->
+        <Geometry x:Key="IconUser">M11.9999 17C15.6623 17 18.8649 18.5751 20.607 20.9247L18.765 21.796C17.3473 20.1157 14.8473 19 11.9999 19C9.15248 19 6.65252 20.1157 5.23479 21.796L3.39355 20.9238C5.13576 18.5747 8.33796 17 11.9999 17ZM11.9999 2C14.7613 2 16.9999 4.23858 16.9999 7V10C16.9999 12.6888 14.8776 14.8818 12.2168 14.9954L11.9999 15C9.23847 15 6.9999 12.7614 6.9999 10V7C6.9999 4.31125 9.1222 2.11818 11.783 2.00462L11.9999 2ZM11.9999 4C10.4022 4 9.09623 5.24892 9.00499 6.82373L8.9999 7V10C8.9999 11.6569 10.343 13 11.9999 13C13.5976 13 14.9036 11.7511 14.9948 10.1763L14.9999 10V7C14.9999 5.34315 13.6567 4 11.9999 4Z</Geometry>
+        <Geometry x:Key="IconLock">M18 8H20C20.5523 8 21 8.44772 21 9V21C21 21.5523 20.5523 22 20 22H4C3.44772 22 3 21.5523 3 21V9C3 8.44772 3.44772 8 4 8H6V7C6 3.68629 8.68629 1 12 1C15.3137 1 18 3.68629 18 7V8ZM5 10V20H19V10H5ZM11 14H13V16H11V14ZM7 14H9V16H7V14ZM15 14H17V16H15V14ZM16 8V7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7V8H16Z</Geometry>
+        <Geometry x:Key="IconEye">M288 80C222.8 80 169.2 109.6 128.1 147.7 89.6 183.5 63 226 49.4 256 63 286 89.6 328.5 128.1 364.3 169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256 513 226 486.4 183.5 447.9 147.7 406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1 3.3 7.9 3.3 16.7 0 24.6-14.9 35.7-46.2 87.7-93 131.1-47.1 43.7-111.8 80.6-192.6 80.6S142.5 443.2 95.4 399.4c-46.8-43.5-78.1-95.4-93-131.1-3.3-7.9-3.3-16.7 0-24.6 14.9-35.7 46.2-87.7 93-131.1zM288 336c44.2 0 80-35.8 80-80 0-29.6-16.1-55.5-40-69.3-1.4 59.7-49.6 107.9-109.3 109.3 13.8 23.9 39.7 40 69.3 40zm-79.6-88.4c2.5 .3 5 .4 7.6 .4 35.3 0 64-28.7 64-64 0-2.6-.2-5.1-.4-7.6-37.4 3.9-67.2 33.7-71.1 71.1zm45.6-115c10.8-3 22.2-4.5 33.9-4.5 8.8 0 17.5 .9 25.8 2.6 .3 .1 .5 .1 .8 .2 57.9 12.2 101.4 63.7 101.4 125.2 0 70.7-57.3 128-128 128-61.6 0-113-43.5-125.2-101.4-1.8-8.6-2.8-17.5-2.8-26.6 0-11 1.4-21.8 4-32 .2-.7 .3-1.3 .5-1.9 11.9-43.4 46.1-77.6 89.5-89.5z</Geometry>
+        <Geometry x:Key="IconEyeClosed">M41-24.9c-9.4-9.4-24.6-9.4-33.9 0S-2.3-.3 7 9.1l528 528c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-96.4-96.4c2.7-2.4 5.4-4.8 8-7.2 46.8-43.5 78.1-95.4 93-131.1 3.3-7.9 3.3-16.7 0-24.6-14.9-35.7-46.2-87.7-93-131.1-47.1-43.7-111.8-80.6-192.6-80.6-56.8 0-105.6 18.2-146 44.2L41-24.9zM176.9 111.1c32.1-18.9 69.2-31.1 111.1-31.1 65.2 0 118.8 29.6 159.9 67.7 38.5 35.7 65.1 78.3 78.6 108.3-13.6 30-40.2 72.5-78.6 108.3-3.1 2.8-6.2 5.6-9.4 8.4L393.8 328c14-20.5 22.2-45.3 22.2-72 0-70.7-57.3-128-128-128-26.7 0-51.5 8.2-72 22.2l-39.1-39.1zm182 182l-108-108c11.1-5.8 23.7-9.1 37.1-9.1 44.2 0 80 35.8 80 80 0 13.4-3.3 26-9.1 37.1zM103.4 173.2l-34-34c-32.6 36.8-55 75.8-66.9 104.5-3.3 7.9-3.3 16.7 0 24.6 14.9 35.7 46.2 87.7 93 131.1 47.1 43.7 111.8 80.6 192.6 80.6 37.3 0 71.2-7.9 101.5-20.6L352.2 422c-20 6.4-41.4 10-64.2 10-65.2 0-118.8-29.6-159.9-67.7-38.5-35.7-65.1-78.3-78.6-108.3 10.4-23.1 28.6-53.6 54-82.8z</Geometry>
+
+        <Style x:Key="ModernTextBoxStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource InputBackground}"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Height" Value="45"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="#BBB"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
-        <Style x:Key="InputBoxStyle" TargetType="Control">
-            <Setter Property="Height" Value="42" />
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="Padding" Value="12,8" />
-            <Setter Property="BorderBrush" Value="#CBD5E1" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Background" Value="White" />
+        <Style x:Key="LoginButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource PrimaryColor}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="15" Background="{TemplateBinding Background}" 
+                                Effect="{Binding RelativeSource={RelativeSource Mode=Self}, Path=(Effect)}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource SecondaryColor}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.98" ScaleY="0.98" CenterX="100" CenterY="22.5"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
 
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="MainCard" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.8"/>
+                    <ThicknessAnimation Storyboard.TargetName="MainCard" Storyboard.TargetProperty="Margin" From="0,40,0,0" To="25" Duration="0:0:0.8" DecelerationRatio="0.9"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
+
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1.05*" />
-            <ColumnDefinition Width="0.95*" />
+            <ColumnDefinition Width="1.2*"/>
+            <ColumnDefinition Width="1.5*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="#0F172A">
-            <Grid Margin="56">
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="Hệ thống quản lý học sinh"
-                               Foreground="White"
-                               FontSize="38"
-                               FontWeight="Bold"
-                               TextWrapping="Wrap" 
-                               TextAlignment="Center"/>
-                    
-                </StackPanel>
-            </Grid>
-        </Border>
+        <!-- Left Column: Background Blur and Brand Logo/Titles -->
+        <!-- Left Column: Gradient background with centered Logo -->
+        <Grid Grid.Column="0">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#0F172A" Offset="0.0"/>
+                    <GradientStop Color="#1E293B" Offset="1.0"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+            
+            <Image Source="/Images/login_logo.png" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center" 
+                   Stretch="UniformToFill"/>
+        </Grid>
 
-        <Grid Grid.Column="1" Margin="56">
-            <Border Background="White"
-                    BorderBrush="#E2E8F0"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                    Padding="36"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center">
-                <StackPanel>
-                    <TextBlock Text="Đăng nhập"
-                               FontSize="25"
-                               FontWeight="Bold"
-                               Foreground="#0F172A" 
-                               TextAlignment="Center"
-                               Padding="10"/>
+        <!-- Right Column: Login Form Card -->
+        <Grid Grid.Column="1" Background="Transparent">
+            <Border x:Name="MainCard" Background="White" CornerRadius="20" Margin="25" VerticalAlignment="Center" MaxWidth="400" HorizontalAlignment="Stretch">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="30" ShadowDepth="5" Direction="270" Color="#B0C4DE" Opacity="0.5"/>
+                </Border.Effect>
 
-                    <TextBlock Text="Tên đăng nhập" Style="{StaticResource InputLabelStyle}" />
-                    <TextBox Text="{Binding TenDangNhap, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource InputBoxStyle}"
-                             IsEnabled="{Binding IsFormEnabled}" />
+                <Grid>
+                    <StackPanel Margin="30,40">
+                        <!-- Card Header Title -->
+                        <StackPanel Margin="0,0,0,30" HorizontalAlignment="Center">
+                            <TextBlock Text="ĐĂNG NHẬP" FontSize="22" FontWeight="Bold" Foreground="{StaticResource PrimaryColor}" Margin="0,-10,0,0"/>
+                        </StackPanel>
 
-                    <TextBlock Text="Mật khẩu"
-                               Style="{StaticResource InputLabelStyle}"
-                               Margin="0,18,0,6" />
-                    <PasswordBox controls:PasswordBoxBinding.BoundPassword="{Binding MatKhau, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 Style="{StaticResource InputBoxStyle}"
-                                 IsEnabled="{Binding IsFormEnabled}" />
+                        <!-- Username Input -->
+                        <TextBlock Text="Tên đăng nhập" FontWeight="SemiBold" Foreground="{StaticResource PrimaryColor}" Margin="5,0,0,5"/>
+                        <Border Style="{StaticResource ModernTextBoxStyle}" Margin="0,0,0,20">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="40"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Path Data="{StaticResource IconUser}" Fill="{StaticResource GrayText}" Stretch="Uniform" Width="16" Height="16" HorizontalAlignment="Center"/>
 
-                    <Border Background="#FEF2F2"
-                            BorderBrush="#FCA5A5"
-                            BorderThickness="1"
-                            CornerRadius="6"
-                            Padding="10"
-                            Margin="0,18,0,0"
-                            Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <TextBlock Text="{Binding ErrorMessage}"
-                                   Foreground="#B91C1C"
-                                   TextWrapping="Wrap" />
-                    </Border>
+                                <TextBox Grid.Column="1" x:Name="txtUsername"
+                                         Text="{Binding TenDangNhap, UpdateSourceTrigger=PropertyChanged}" 
+                                         KeyDown="Username_KeyDown"
+                                         IsEnabled="{Binding IsFormEnabled}"
+                                         VerticalContentAlignment="Center" BorderThickness="0" Background="Transparent"
+                                         FontSize="14" Padding="0,0,10,0"/>
+                            </Grid>
+                        </Border>
 
-                    <Button Content="Đăng nhập"
-                            Command="{Binding LoginCommand}"
-                            Height="44"
-                            Margin="0,24,0,0"
-                            Background="#0F172A"
-                            Foreground="White"
-                            BorderThickness="0"
-                            FontSize="15"
-                            FontWeight="SemiBold"
-                            IsDefault="True" />
+                        <!-- Password Input -->
+                        <TextBlock Text="Mật khẩu" FontWeight="SemiBold" Foreground="{StaticResource PrimaryColor}" Margin="5,0,0,5"/>
+                        <Border Style="{StaticResource ModernTextBoxStyle}" Margin="0,0,0,15">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="40"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="40"/>
+                                </Grid.ColumnDefinitions>
 
-                    <ProgressBar IsIndeterminate="True"
-                                 Height="4"
-                                 Margin="0,16,0,0"
-                                 Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                </StackPanel>
+                                <Path Data="{StaticResource IconLock}" Fill="{StaticResource GrayText}" Stretch="Uniform" Width="16" Height="16" HorizontalAlignment="Center"/>
+
+                                <!-- Plaintext password visible state -->
+                                <TextBox Grid.Column="1" x:Name="txtVisiblePassword"
+                                         Text="{Binding MatKhau, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Visibility="{Binding IsPasswordVisible, Converter={StaticResource BoolToVisibility}}"
+                                         KeyDown="Password_KeyDown"
+                                         IsEnabled="{Binding IsFormEnabled}"
+                                         VerticalContentAlignment="Center" BorderThickness="0" Background="Transparent"
+                                         FontSize="14" Panel.ZIndex="2" IsHitTestVisible="{Binding IsPasswordVisible}"/>
+
+                                <!-- Masked password hidden state -->
+                                <PasswordBox Grid.Column="1" x:Name="txtPassword"
+                                             Visibility="{Binding IsPasswordVisible, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}"
+                                             KeyDown="Password_KeyDown"
+                                             IsEnabled="{Binding IsFormEnabled}"
+                                             VerticalContentAlignment="Center" BorderThickness="0" Background="Transparent"
+                                             FontSize="14" Panel.ZIndex="1"
+                                             IsHitTestVisible="{Binding IsPasswordVisible, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}"
+                                             controls:PasswordBoxBinding.BoundPassword="{Binding MatKhau, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                <!-- Password Eye Visibility Toggle Button -->
+                                <Button Grid.Column="2" Command="{Binding TogglePasswordVisibilityCommand}"
+                                        Width="25" Height="25" Margin="0,0,5,0"
+                                        Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                        IsEnabled="{Binding IsFormEnabled}">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="BtnBorder" Background="{TemplateBinding Background}" CornerRadius="5">
+                                                <Path Stretch="Uniform" Width="18"
+                                                      Fill="{TemplateBinding Foreground}" 
+                                                      HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <Path.Style>
+                                                        <Style TargetType="Path">
+                                                            <Setter Property="Data" Value="{StaticResource IconEyeClosed}"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding DataContext.IsPasswordVisible, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                                                                    <Setter Property="Data" Value="{StaticResource IconEye}"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Path.Style>
+                                                </Path>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="BtnBorder" Property="Background" Value="#D3DAD9"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </Trigger>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter TargetName="BtnBorder" Property="Background" Value="#D3DAD9"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                    <Button.Foreground>
+                                        <SolidColorBrush Color="{Binding Color, Source={StaticResource SecondaryColor}}"/>
+                                    </Button.Foreground>
+                                </Button>
+                            </Grid>
+                        </Border>
+
+                        <!-- Error Message Border -->
+                        <Border Background="#FEF2F2"
+                                BorderBrush="#FCA5A5"
+                                BorderThickness="1"
+                                CornerRadius="6"
+                                Padding="10"
+                                Margin="0,5,0,15"
+                                Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}">
+                            <TextBlock Text="{Binding ErrorMessage}"
+                                       Foreground="#B91C1C"
+                                       TextWrapping="Wrap" />
+                        </Border>
+
+                        <!-- Remember Me and Forgot Password links -->
+                        <Grid Margin="0,0,0,25">
+                            <CheckBox Content="Ghi nhớ tôi" IsChecked="{Binding IsRememberMeChecked}"
+                                      IsEnabled="{Binding IsFormEnabled}"
+                                      Foreground="{StaticResource GrayText}" VerticalAlignment="Center" Cursor="Hand">
+                                <CheckBox.LayoutTransform>
+                                    <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
+                                </CheckBox.LayoutTransform>
+                            </CheckBox>
+                        </Grid>
+
+                        <!-- Submit Login Button -->
+                        <Button Content="ĐĂNG NHẬP" Command="{Binding LoginCommand}" 
+                                IsDefault="True"
+                                IsEnabled="{Binding IsFormEnabled}"
+                                Style="{StaticResource LoginButtonStyle}" Height="45">
+                            <Button.Effect>
+                                <DropShadowEffect Color="#102f76" BlurRadius="15" ShadowDepth="3" Opacity="0.3"/>
+                            </Button.Effect>
+                        </Button>
+
+                        <!-- Loading Progress Bar -->
+                        <ProgressBar IsIndeterminate="True"
+                                     Height="4"
+                                     Margin="0,16,0,0"
+                                     Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" />
+                    </StackPanel>
+                </Grid>
             </Border>
         </Grid>
     </Grid>

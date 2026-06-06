@@ -30,22 +30,22 @@
             <Setter Property="Padding" Value="18,0"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Background" Value="#0F172A"/>
+            <Setter Property="Background" Value="#52e5b9"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="10">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#0F172A"/>
+                                <Setter Property="Background" Value="#42d4a8"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Background" Value="#A5B4FC"/>
+                                <Setter Property="Background" Value="#A7F3D0"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -123,35 +123,41 @@
                 <ProgressBar IsIndeterminate="True" Height="5"
                              Margin="0,0,0,12"
                              Visibility="{Binding IsLoadingFilters, Converter={StaticResource BoolVis}}"/>
-                <StackPanel Orientation="Horizontal">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" x:Name="SubjectFilterCol" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
                     <!-- Lớp -->
-                    <StackPanel Margin="0,0,16,0">
+                    <StackPanel Grid.Column="0" Margin="0,0,16,0">
                         <TextBlock Text="Lớp" FontSize="12" FontWeight="SemiBold"
                                    Foreground="#64748B" Margin="0,0,0,4"/>
                         <ComboBox ItemsSource="{Binding Classes}"
                                   SelectedItem="{Binding SelectedClass}"
                                   DisplayMemberPath="TenLop"
-                                  Style="{StaticResource FilterCombo}"/>
+                                  Style="{StaticResource ModernComboBox}"/>
                     </StackPanel>
 
                     <!-- Môn học (subject tab only) -->
-                    <StackPanel x:Name="SubjectFilterPanel" Margin="0,0,16,0">
+                    <StackPanel x:Name="SubjectFilterPanel" Grid.Column="1" Margin="0,0,16,0">
                         <TextBlock Text="Môn học" FontSize="12" FontWeight="SemiBold"
                                    Foreground="#64748B" Margin="0,0,0,4"/>
                         <ComboBox ItemsSource="{Binding Subjects}"
                                   SelectedItem="{Binding SelectedSubject}"
                                   DisplayMemberPath="TenMonHoc"
-                                  Style="{StaticResource FilterCombo}"/>
+                                  Style="{StaticResource ModernComboBox}"/>
                     </StackPanel>
 
                     <!-- Học kỳ -->
-                    <StackPanel Margin="0,0,20,0">
+                    <StackPanel Grid.Column="2" Margin="0,0,16,0">
                         <TextBlock Text="Học kỳ" FontSize="12" FontWeight="SemiBold"
                                    Foreground="#64748B" Margin="0,0,0,4"/>
                         <ComboBox ItemsSource="{Binding Terms}"
                                   SelectedItem="{Binding SelectedTerm}"
-                                  Style="{StaticResource FilterCombo}">
+                                  Style="{StaticResource ModernComboBox}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock>
@@ -164,28 +170,29 @@
                         </ComboBox>
                     </StackPanel>
 
-                    <!-- Subject report button -->
-                    <Button x:Name="BtnLoadSubject"
-                            Content="Xem báo cáo"
-                            Command="{Binding LoadSubjectReportCommand}"
-                            Style="{StaticResource LoadButton}"
-                            VerticalAlignment="Bottom"/>
+                    <!-- Actions -->
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom">
+                        <!-- Subject report button -->
+                        <Button x:Name="BtnLoadSubject"
+                                Content="Xem báo cáo"
+                                Command="{Binding LoadSubjectReportCommand}"
+                                Style="{StaticResource LoadButton}"/>
 
-                    <!-- Semester report button -->
-                    <Button x:Name="BtnLoadSemester"
-                            Content="🔍 Xem báo cáo"
-                            Command="{Binding LoadSemesterReportCommand}"
-                            Style="{StaticResource LoadButton}"
-                            VerticalAlignment="Bottom"
-                            Visibility="Collapsed"/>
+                        <!-- Semester report button -->
+                        <Button x:Name="BtnLoadSemester"
+                                Content="🔍 Xem báo cáo"
+                                Command="{Binding LoadSemesterReportCommand}"
+                                Style="{StaticResource LoadButton}"
+                                Visibility="Collapsed"/>
 
-                    <!-- Loading spinner -->
-                    <ProgressBar IsIndeterminate="True"
-                                 Width="90" Height="8"
-                                 Margin="16,0,0,8"
-                                 VerticalAlignment="Bottom"
-                                 Visibility="{Binding IsLoadingReport, Converter={StaticResource BoolVis}}"/>
-                </StackPanel>
+                        <!-- Loading spinner -->
+                        <ProgressBar IsIndeterminate="True"
+                                     Width="80" Height="8"
+                                     VerticalAlignment="Center"
+                                     Margin="12,0,0,0"
+                                     Visibility="{Binding IsLoadingReport, Converter={StaticResource BoolVis}}"/>
+                    </StackPanel>
+                </Grid>
             </StackPanel>
         </Border>
 

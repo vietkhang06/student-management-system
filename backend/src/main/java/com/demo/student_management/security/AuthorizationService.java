@@ -42,7 +42,7 @@ public class AuthorizationService {
         }
 
         return getCurrentTeacher(user)
-                .map(GiaoVien::getLop)
+                .map(GiaoVien::getLopChuNhiem)
                 .map(Lop::getIdLop);
     }
 

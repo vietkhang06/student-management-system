@@ -41,6 +41,9 @@ public class ChiTietDiem {
     @Column(name = "DIEM45", precision = 4, scale = 2)
     private BigDecimal diem45;
 
+    @Column(name = "DIEMCK", precision = 4, scale = 2)
+    private BigDecimal diemCk;
+
     @Column(name = "DIEMTB", precision = 4, scale = 2)
     private BigDecimal diemTb;
 }

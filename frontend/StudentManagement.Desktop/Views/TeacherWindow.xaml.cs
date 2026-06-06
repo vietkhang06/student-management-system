@@ -14,13 +14,21 @@ public partial class TeacherWindow : Window
     public TeacherCreateRequest? CreateResult { get; private set; }
     public TeacherUpdateRequest? UpdateResult { get; private set; }
     private readonly GiaoVienResponse? _existingTeacher;
+    private readonly List<GiaoVienResponse> _allTeachers;
 
-    public TeacherWindow(List<LopResponse> classes, List<MonHocResponse> subjects, GiaoVienResponse? existingTeacher = null)
+    public TeacherWindow(List<LopResponse> classes, List<MonHocResponse> subjects, List<GiaoVienResponse> allTeachers, GiaoVienResponse? existingTeacher = null)
     {
         InitializeComponent();
         _existingTeacher = existingTeacher;
+        _allTeachers = allTeachers;
 
         CboClass.ItemsSource = classes;
+        
+        var homeroomClasses = new List<LopResponse> { new LopResponse { IdLop = string.Empty, TenLop = "Không" } };
+        homeroomClasses.AddRange(classes);
+        CboHomeroomClass.ItemsSource = homeroomClasses;
+        CboHomeroomClass.SelectedIndex = 0;
+
         CboSubject.ItemsSource = subjects;
 
         if (existingTeacher != null)
@@ -55,6 +63,16 @@ public partial class TeacherWindow : Window
             if (!string.IsNullOrEmpty(existingTeacher.IdLop))
             {
                 CboClass.SelectedItem = classes.FirstOrDefault(c => c.IdLop == existingTeacher.IdLop);
+            }
+
+            // Set Homeroom Class ComboBox
+            if (!string.IsNullOrEmpty(existingTeacher.IdLopChuNhiem))
+            {
+                CboHomeroomClass.SelectedItem = homeroomClasses.FirstOrDefault(c => c.IdLop == existingTeacher.IdLopChuNhiem);
+            }
+            else
+            {
+                CboHomeroomClass.SelectedIndex = 0;
             }
 
             // Set Subject ComboBox
@@ -95,13 +113,28 @@ public partial class TeacherWindow : Window
 
         if (CboClass.SelectedItem == null)
         {
-            MessageBox.Show("Vui lòng chọn Lớp công tác/Chủ nhiệm", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("Vui lòng chọn Lớp công tác", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
         var selectedClass = (LopResponse)CboClass.SelectedItem;
+        var selectedHomeroomClass = (LopResponse?)CboHomeroomClass.SelectedItem;
         var selectedSubject = (MonHocResponse?)CboSubject.SelectedItem;
         var gender = (CboGender.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? string.Empty;
+
+        var idLopChuNhiem = (selectedHomeroomClass != null && !string.IsNullOrEmpty(selectedHomeroomClass.IdLop))
+            ? selectedHomeroomClass.IdLop
+            : string.Empty;
+
+        if (!string.IsNullOrEmpty(idLopChuNhiem))
+        {
+            var duplicate = _allTeachers?.FirstOrDefault(t => t.IdLopChuNhiem == idLopChuNhiem && (_existingTeacher == null || t.IdGiaoVien != _existingTeacher.IdGiaoVien));
+            if (duplicate != null)
+            {
+                MessageBox.Show($"Lớp {selectedHomeroomClass.TenLop} đã có giáo viên chủ nhiệm khác: {duplicate.TenGiaoVien}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
 
         if (_existingTeacher == null)
         {
@@ -115,6 +148,7 @@ public partial class TeacherWindow : Window
                 Sdt = TxtSdt.Text.Trim(),
                 Email = TxtEmail.Text.Trim(),
                 IdLop = selectedClass.IdLop,
+                IdLopChuNhiem = idLopChuNhiem,
                 IdMonHoc = selectedSubject?.IdMonHoc ?? string.Empty,
                 Active = ChkActive.IsChecked == true
             };
@@ -129,6 +163,7 @@ public partial class TeacherWindow : Window
                 Sdt = TxtSdt.Text.Trim(),
                 Email = TxtEmail.Text.Trim(),
                 IdLop = selectedClass.IdLop,
+                IdLopChuNhiem = idLopChuNhiem,
                 IdMonHoc = selectedSubject?.IdMonHoc ?? string.Empty,
                 Active = ChkActive.IsChecked == true
             };

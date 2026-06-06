@@ -18,6 +18,8 @@ public class GiaoVienResponse {
     private String gioiTinh;
     private String idLop;
     private String tenLop;
+    private String idLopChuNhiem;
+    private String tenLopChuNhiem;
     private String idMonHoc;
     private String tenMonHoc;
     private Boolean active;

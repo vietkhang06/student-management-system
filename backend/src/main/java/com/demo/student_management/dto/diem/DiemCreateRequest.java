@@ -11,4 +11,5 @@ public class DiemCreateRequest {
     private String idHocKy;
     private BigDecimal diem15;
     private BigDecimal diem45;
+    private BigDecimal diemCk;
 }

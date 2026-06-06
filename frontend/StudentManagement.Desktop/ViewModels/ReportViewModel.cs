@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -21,6 +22,7 @@ public sealed partial class ReportViewModel : ObservableObject
     private readonly IClassApiClient _classApiClient;
     private readonly ISubjectApiClient _subjectApiClient;
     private readonly ITermApiClient _termApiClient;
+    private readonly IUserSessionService _userSessionService;
 
     // ── Tab selection ─────────────────────────────────────────────────────────
     [ObservableProperty]
@@ -105,12 +107,14 @@ public sealed partial class ReportViewModel : ObservableObject
         IReportApiClient reportApiClient,
         IClassApiClient classApiClient,
         ISubjectApiClient subjectApiClient,
-        ITermApiClient termApiClient)
+        ITermApiClient termApiClient,
+        IUserSessionService userSessionService)
     {
         _reportApiClient = reportApiClient;
         _classApiClient = classApiClient;
         _subjectApiClient = subjectApiClient;
         _termApiClient = termApiClient;
+        _userSessionService = userSessionService;
 
         _ = LoadFiltersAsync();
     }
@@ -195,9 +199,49 @@ public sealed partial class ReportViewModel : ObservableObject
 
             await Task.WhenAll(classTask, subjectTask, termTask);
 
-            foreach (var c in await classTask)   Classes.Add(c);
-            foreach (var s in await subjectTask) Subjects.Add(s);
-            foreach (var t in await termTask)    Terms.Add(t);
+            var allClasses = await classTask;
+            var allSubjects = await subjectTask;
+            var allTerms = await termTask;
+
+            // Populate Terms
+            foreach (var t in allTerms)
+            {
+                Terms.Add(t);
+            }
+
+            // Populate Subjects
+            foreach (var s in allSubjects)
+            {
+                Subjects.Add(s);
+            }
+
+            // Populate Classes based on role
+            var user = _userSessionService.CurrentUser;
+            var profile = _userSessionService.Profile;
+
+            if (user == null || user.IsBanQuanLy)
+            {
+                foreach (var c in allClasses)
+                {
+                    Classes.Add(c);
+                }
+            }
+            else
+            {
+                // Teacher: ONLY see their homeroom class
+                if (profile != null && !string.IsNullOrEmpty(profile.ChuNhiemLopId))
+                {
+                    foreach (var c in allClasses)
+                    {
+                        if (string.Equals(c.IdLop, profile.ChuNhiemLopId, StringComparison.OrdinalIgnoreCase))
+                        {
+                            Classes.Add(c);
+                            SelectedClass = c; // Auto-select homeroom class
+                            break;
+                        }
+                    }
+                }
+            }
         }
         catch (Exception ex)
         {

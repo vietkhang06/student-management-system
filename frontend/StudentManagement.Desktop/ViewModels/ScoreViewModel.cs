@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -27,6 +28,9 @@ public sealed partial class ScoreRowItem : ObservableObject
     [ObservableProperty]
     private string _diem45 = string.Empty;
 
+    [ObservableProperty]
+    private string _diemCk = string.Empty;
+
     // Computed average (read-only, updated by VM after save)
     [ObservableProperty]
     private string _diemTb = string.Empty;
@@ -46,6 +50,12 @@ public sealed partial class ScoreRowItem : ObservableObject
     /// <summary>Returns parsed Diem45, or null if invalid.</summary>
     public decimal? ParsedDiem45 =>
         decimal.TryParse(Diem45.Replace(',', '.'),
+            System.Globalization.NumberStyles.Any,
+            System.Globalization.CultureInfo.InvariantCulture, out var v) ? v : null;
+
+    /// <summary>Returns parsed DiemCk, or null if invalid.</summary>
+    public decimal? ParsedDiemCk =>
+        decimal.TryParse(DiemCk.Replace(',', '.'),
             System.Globalization.NumberStyles.Any,
             System.Globalization.CultureInfo.InvariantCulture, out var v) ? v : null;
 }
@@ -98,6 +108,10 @@ public sealed partial class ScoreViewModel : ObservableObject
     private bool _canEditScores;
 
     // ── Lookup collections ─────────────────────────────────────────────────
+    private readonly List<LopResponse> _allClasses = new();
+    private readonly List<MonHocResponse> _allSubjects = new();
+    private readonly List<HocKyResponse> _allTerms = new();
+
     public ObservableCollection<LopResponse> Classes { get; } = new();
     public ObservableCollection<MonHocResponse> Subjects { get; } = new();
     public ObservableCollection<HocKyResponse> Terms { get; } = new();
@@ -155,6 +169,7 @@ public sealed partial class ScoreViewModel : ObservableObject
                     TenHocSinh = s.TenHocSinh,
                     Diem15     = s.Diem15.HasValue ? s.Diem15.Value.ToString("0.##") : string.Empty,
                     Diem45     = s.Diem45.HasValue ? s.Diem45.Value.ToString("0.##") : string.Empty,
+                    DiemCk     = s.DiemCk.HasValue ? s.DiemCk.Value.ToString("0.##") : string.Empty,
                     DiemTb     = s.DiemTb.HasValue ? s.DiemTb.Value.ToString("0.##") : string.Empty,
                 });
             }
@@ -197,12 +212,17 @@ public sealed partial class ScoreViewModel : ObservableObject
         // Validate score range 0 – 10
         if (row.ParsedDiem15.HasValue && (row.ParsedDiem15 < 0 || row.ParsedDiem15 > 10))
         {
-            row.SaveStatus = "❌ Điểm 15' phải từ 0 đến 10";
+            row.SaveStatus = "❌ Điểm thường xuyên phải từ 0 đến 10";
             return;
         }
         if (row.ParsedDiem45.HasValue && (row.ParsedDiem45 < 0 || row.ParsedDiem45 > 10))
         {
-            row.SaveStatus = "❌ Điểm 1 tiết phải từ 0 đến 10";
+            row.SaveStatus = "❌ Điểm một tiết phải từ 0 đến 10";
+            return;
+        }
+        if (row.ParsedDiemCk.HasValue && (row.ParsedDiemCk < 0 || row.ParsedDiemCk > 10))
+        {
+            row.SaveStatus = "❌ Điểm cuối kỳ phải từ 0 đến 10";
             return;
         }
 
@@ -224,12 +244,14 @@ public sealed partial class ScoreViewModel : ObservableObject
                 IdHocKy   = SelectedTerm!.IdHocKy,
                 Diem15    = row.ParsedDiem15,
                 Diem45    = row.ParsedDiem45,
+                DiemCk    = row.ParsedDiemCk,
             };
 
             var saved = await _scoreApiClient.SaveAsync(request);
             row.DiemTb    = saved.DiemTb.HasValue ? saved.DiemTb.Value.ToString("0.##") : string.Empty;
             row.Diem15    = saved.Diem15.HasValue ? saved.Diem15.Value.ToString("0.##") : string.Empty;
             row.Diem45    = saved.Diem45.HasValue ? saved.Diem45.Value.ToString("0.##") : string.Empty;
+            row.DiemCk    = saved.DiemCk.HasValue ? saved.DiemCk.Value.ToString("0.##") : string.Empty;
             row.SaveStatus = "✅";
         }
         catch (Exception ex)
@@ -239,6 +261,67 @@ public sealed partial class ScoreViewModel : ObservableObject
         finally
         {
             row.IsSaving = false;
+        }
+    }
+
+    partial void OnSelectedClassChanged(LopResponse? value)
+    {
+        UpdateSubjectsFilter();
+    }
+
+    private void UpdateSubjectsFilter()
+    {
+        Subjects.Clear();
+        SelectedSubject = null;
+
+        if (SelectedClass == null) return;
+
+        var user = _userSessionService.CurrentUser;
+        var profile = _userSessionService.Profile;
+
+        if (user == null || user.IsBanQuanLy)
+        {
+            foreach (var s in _allSubjects)
+            {
+                Subjects.Add(s);
+            }
+            return;
+        }
+
+        // Teacher
+        if (profile != null)
+        {
+            // If homeroom teacher for this class, they can view all subjects
+            if (string.Equals(SelectedClass.IdLop, profile.ChuNhiemLopId, StringComparison.OrdinalIgnoreCase))
+            {
+                foreach (var s in _allSubjects)
+                {
+                    Subjects.Add(s);
+                }
+                return;
+            }
+
+            // Otherwise, filter subjects they teach in this class
+            var allowedSubjectIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (profile.PhanCongKeys != null)
+            {
+                foreach (var key in profile.PhanCongKeys)
+                {
+                    var parts = key.Split('_');
+                    if (parts.Length > 1 && string.Equals(parts[0], SelectedClass.IdLop, StringComparison.OrdinalIgnoreCase))
+                    {
+                        allowedSubjectIds.Add(parts[1]);
+                    }
+                }
+            }
+
+            foreach (var s in _allSubjects)
+            {
+                if (allowedSubjectIds.Contains(s.IdMonHoc))
+                {
+                    Subjects.Add(s);
+                }
+            }
         }
     }
 
@@ -254,9 +337,66 @@ public sealed partial class ScoreViewModel : ObservableObject
 
             await Task.WhenAll(classTask, subjectTask, termTask);
 
-            foreach (var c in await classTask)   Classes.Add(c);
-            foreach (var s in await subjectTask) Subjects.Add(s);
-            foreach (var t in await termTask)    Terms.Add(t);
+            _allClasses.Clear();
+            _allSubjects.Clear();
+            _allTerms.Clear();
+
+            _allClasses.AddRange(await classTask);
+            _allSubjects.AddRange(await subjectTask);
+            _allTerms.AddRange(await termTask);
+
+            // Populate Terms
+            foreach (var t in _allTerms)
+            {
+                Terms.Add(t);
+            }
+
+            // Populate Classes based on user role
+            var user = _userSessionService.CurrentUser;
+            var profile = _userSessionService.Profile;
+
+            if (user == null || user.IsBanQuanLy)
+            {
+                foreach (var c in _allClasses)
+                {
+                    Classes.Add(c);
+                }
+                foreach (var s in _allSubjects)
+                {
+                    Subjects.Add(s);
+                }
+            }
+            else
+            {
+                // Teacher: filter classes where they teach or are homeroom
+                var allowedClassIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                if (profile != null)
+                {
+                    if (!string.IsNullOrEmpty(profile.ChuNhiemLopId))
+                    {
+                        allowedClassIds.Add(profile.ChuNhiemLopId);
+                    }
+                    if (profile.PhanCongKeys != null)
+                    {
+                        foreach (var key in profile.PhanCongKeys)
+                        {
+                            var parts = key.Split('_');
+                            if (parts.Length > 0)
+                            {
+                                allowedClassIds.Add(parts[0]);
+                            }
+                        }
+                    }
+                }
+
+                foreach (var c in _allClasses)
+                {
+                    if (allowedClassIds.Contains(c.IdLop))
+                    {
+                        Classes.Add(c);
+                    }
+                }
+            }
         }
         catch (Exception ex)
         {

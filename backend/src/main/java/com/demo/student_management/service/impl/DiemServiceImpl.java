@@ -26,8 +26,9 @@ public class DiemServiceImpl implements DiemService {
 
     @Override
     public DiemResponse save(DiemCreateRequest request) {
-        validateScore(request.getDiem15(), "Điểm 15 phút");
-        validateScore(request.getDiem45(), "Điểm 1 tiết");
+        validateScore(request.getDiem15(), "Điểm thường xuyên");
+        validateScore(request.getDiem45(), "Điểm một tiết");
+        validateScore(request.getDiemCk(), "Điểm cuối kỳ");
 
         HocSinh hocSinh = hocSinhRepository.findById(request.getIdHocSinh())
                 .orElseThrow(() -> new BusinessException("Không tìm thấy học sinh"));
@@ -39,8 +40,9 @@ public class DiemServiceImpl implements DiemService {
                 .orElseThrow(() -> new BusinessException("Không tìm thấy học kỳ"));
 
         BigDecimal diemTb = request.getDiem15()
-                .add(request.getDiem45())
-                .divide(BigDecimal.valueOf(2), 2, RoundingMode.HALF_UP);
+                .add(request.getDiem45().multiply(BigDecimal.valueOf(2)))
+                .add(request.getDiemCk().multiply(BigDecimal.valueOf(3)))
+                .divide(BigDecimal.valueOf(6), 2, RoundingMode.HALF_UP);
 
         ChiTietDiemId id = new ChiTietDiemId(
                 request.getIdHocSinh(),
@@ -55,6 +57,7 @@ public class DiemServiceImpl implements DiemService {
                 .hocKy(hocKy)
                 .diem15(request.getDiem15())
                 .diem45(request.getDiem45())
+                .diemCk(request.getDiemCk())
                 .diemTb(diemTb)
                 .build();
 
@@ -67,6 +70,7 @@ public class DiemServiceImpl implements DiemService {
                 request.getIdHocKy(),
                 request.getDiem15(),
                 request.getDiem45(),
+                request.getDiemCk(),
                 diemTb
         );
     }
@@ -95,6 +99,7 @@ public class DiemServiceImpl implements DiemService {
                                 idHocKy,
                                 score.getDiem15(),
                                 score.getDiem45(),
+                                score.getDiemCk(),
                                 score.getDiemTb()
                         );
                     } else {
@@ -103,6 +108,7 @@ public class DiemServiceImpl implements DiemService {
                                 student.getTen(),
                                 idMonHoc,
                                 idHocKy,
+                                null,
                                 null,
                                 null,
                                 null

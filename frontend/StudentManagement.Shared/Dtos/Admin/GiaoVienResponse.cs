@@ -10,6 +10,8 @@ public sealed class GiaoVienResponse
     public string GioiTinh { get; set; } = string.Empty;
     public string IdLop { get; set; } = string.Empty;
     public string TenLop { get; set; } = string.Empty;
+    public string IdLopChuNhiem { get; set; } = string.Empty;
+    public string TenLopChuNhiem { get; set; } = string.Empty;
     public string IdMonHoc { get; set; } = string.Empty;
     public string TenMonHoc { get; set; } = string.Empty;
     public bool Active { get; set; } = true;

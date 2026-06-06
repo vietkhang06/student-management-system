@@ -214,7 +214,7 @@ public sealed partial class SystemAdminViewModel : ObservableObject
     private async Task CreateTeacher()
     {
         var activeSubjects = _allSubjects.Where(s => s.TrangThaiSuDung).ToList();
-        var dialog = new Views.TeacherWindow(Classes.ToList(), activeSubjects);
+        var dialog = new Views.TeacherWindow(Classes.ToList(), activeSubjects, _allTeachers);
         dialog.Owner = Application.Current.MainWindow;
         if (dialog.ShowDialog() == true && dialog.CreateResult != null)
         {
@@ -246,7 +246,7 @@ public sealed partial class SystemAdminViewModel : ObservableObject
     {
         if (teacher == null) return;
         var activeSubjects = _allSubjects.Where(s => s.TrangThaiSuDung || s.IdMonHoc == teacher.IdMonHoc).ToList();
-        var dialog = new Views.TeacherWindow(Classes.ToList(), activeSubjects, teacher);
+        var dialog = new Views.TeacherWindow(Classes.ToList(), activeSubjects, _allTeachers, teacher);
         dialog.Owner = Application.Current.MainWindow;
         if (dialog.ShowDialog() == true && dialog.UpdateResult != null)
         {

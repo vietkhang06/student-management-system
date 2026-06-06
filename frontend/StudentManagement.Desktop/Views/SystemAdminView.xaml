@@ -462,7 +462,7 @@
 
                             <DataGrid.Columns>
                                 <!-- ID -->
-                                <DataGridTextColumn Header="Mã phân công" Binding="{Binding IdPhanCong}" Width="150">
+                                <DataGridTextColumn Header="Mã phân công" Binding="{Binding IdPhanCong}" Width="180">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="FontFamily" Value="Consolas"/>
@@ -588,29 +588,8 @@
                                     </DataGridTextColumn.ElementStyle>
                                 </DataGridTextColumn>
 
-                                <!-- Full Name -->
-                                <DataGridTextColumn Header="Họ và tên" Binding="{Binding TenGiaoVien}" Width="*">
-                                    <DataGridTextColumn.ElementStyle>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="FontWeight" Value="SemiBold"/>
-                                            <Setter Property="Foreground" Value="#1E293B"/>
-                                            <Setter Property="VerticalAlignment" Value="Center"/>
-                                        </Style>
-                                    </DataGridTextColumn.ElementStyle>
-                                </DataGridTextColumn>
-
                                 <!-- Username -->
-                                <DataGridTextColumn Header="Tên đăng nhập" Binding="{Binding TenDangNhap}" Width="120">
-                                    <DataGridTextColumn.ElementStyle>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Foreground" Value="#0F172A"/>
-                                            <Setter Property="VerticalAlignment" Value="Center"/>
-                                        </Style>
-                                    </DataGridTextColumn.ElementStyle>
-                                </DataGridTextColumn>
-
-                                <!-- Gender -->
-                                <DataGridTextColumn Header="Giới tính" Binding="{Binding GioiTinh}" Width="80">
+                                <DataGridTextColumn Header="Tên đăng nhập" Binding="{Binding TenDangNhap}" Width="130">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Foreground" Value="#0F172A"/>
@@ -620,17 +599,7 @@
                                 </DataGridTextColumn>
 
                                 <!-- Email -->
-                                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="160">
-                                    <DataGridTextColumn.ElementStyle>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Foreground" Value="#475569"/>
-                                            <Setter Property="VerticalAlignment" Value="Center"/>
-                                        </Style>
-                                    </DataGridTextColumn.ElementStyle>
-                                </DataGridTextColumn>
-
-                                <!-- Phone -->
-                                <DataGridTextColumn Header="Số điện thoại" Binding="{Binding Sdt}" Width="110">
+                                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Foreground" Value="#475569"/>
@@ -640,7 +609,7 @@
                                 </DataGridTextColumn>
 
                                 <!-- Subject -->
-                                <DataGridTextColumn Header="Môn giảng dạy" Binding="{Binding TenMonHoc}" Width="130">
+                                <DataGridTextColumn Header="Môn giảng dạy" Binding="{Binding TenMonHoc}" Width="150">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Foreground" Value="#0F172A"/>
@@ -650,7 +619,17 @@
                                 </DataGridTextColumn>
 
                                 <!-- Class -->
-                                <DataGridTextColumn Header="Lớp" Binding="{Binding TenLop}" Width="100">
+                                <DataGridTextColumn Header="Lớp công tác" Binding="{Binding TenLop}" Width="120">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="#0F172A"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <!-- Homeroom Class -->
+                                <DataGridTextColumn Header="Lớp chủ nhiệm" Binding="{Binding TenLopChuNhiem}" Width="120">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Foreground" Value="#0F172A"/>

@@ -92,8 +92,8 @@ public class AuthServiceImpl implements AuthService {
             java.util.Optional<com.demo.student_management.entity.GiaoVien> gvOpt = giaoVienRepository.findByTaiKhoan_IdTaiKhoan(idTaiKhoan);
             if (gvOpt.isPresent()) {
                 com.demo.student_management.entity.GiaoVien gv = gvOpt.get();
-                if (gv.getLop() != null) {
-                    chuNhiemLopId = gv.getLop().getIdLop();
+                if (gv.getLopChuNhiem() != null) {
+                    chuNhiemLopId = gv.getLopChuNhiem().getIdLop();
                 }
                 java.util.List<com.demo.student_management.entity.PhanCongGiangDay> pcList = phanCongGiangDayRepository.findByGiaoVien_TaiKhoan_IdTaiKhoan(idTaiKhoan);
                 for (com.demo.student_management.entity.PhanCongGiangDay pc : pcList) {

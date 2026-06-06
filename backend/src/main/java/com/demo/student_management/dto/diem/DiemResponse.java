@@ -21,5 +21,7 @@ public class DiemResponse {
 
     private BigDecimal diem45;
 
+    private BigDecimal diemCk;
+
     private BigDecimal diemTb;
 }

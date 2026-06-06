@@ -16,6 +16,7 @@ public class TeacherUpdateRequest {
     private String email;
     private String sdt;
     private String idLop;
+    private String idLopChuNhiem;
     private String idMonHoc;
     private Boolean active;
 }

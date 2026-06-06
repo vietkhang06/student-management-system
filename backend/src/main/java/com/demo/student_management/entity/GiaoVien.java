@@ -23,6 +23,10 @@ public class GiaoVien {
     @JoinColumn(name = "ID_LOP", columnDefinition = "char(5)", nullable = false)
     private Lop lop;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_LOP_CHUNHIEM", columnDefinition = "char(5)")
+    private Lop lopChuNhiem;
+
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ID_TAIKHOAN", columnDefinition = "char(36)", nullable = false, unique = true)
     private TaiKhoan taiKhoan;

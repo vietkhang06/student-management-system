@@ -12,6 +12,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -122,6 +123,17 @@ public class SystemAdminController {
         Lop lop = lopRepository.findById(request.getIdLop())
                 .orElseThrow(() -> new BusinessException("Không tìm thấy lớp học"));
 
+        Lop lopChuNhiem = null;
+        if (request.getIdLopChuNhiem() != null && !request.getIdLopChuNhiem().trim().isEmpty()) {
+            lopChuNhiem = lopRepository.findById(request.getIdLopChuNhiem())
+                    .orElseThrow(() -> new BusinessException("Không tìm thấy lớp chủ nhiệm"));
+            
+            Optional<GiaoVien> existingChuNhiem = giaoVienRepository.findByLopChuNhiem_IdLop(lopChuNhiem.getIdLop());
+            if (existingChuNhiem.isPresent()) {
+                throw new BusinessException("Lớp " + lopChuNhiem.getTenLop() + " đã có giáo viên chủ nhiệm khác: " + existingChuNhiem.get().getTaiKhoan().getTen());
+            }
+        }
+
         MonHoc monHoc = null;
         if (request.getIdMonHoc() != null && !request.getIdMonHoc().trim().isEmpty()) {
             monHoc = monHocRepository.findById(request.getIdMonHoc())
@@ -146,6 +158,7 @@ public class SystemAdminController {
                 .idGiaoVien(request.getIdGiaoVien().trim())
                 .taiKhoan(tk)
                 .lop(lop)
+                .lopChuNhiem(lopChuNhiem)
                 .monHoc(monHoc)
                 .luong(0)
                 .build();
@@ -166,6 +179,17 @@ public class SystemAdminController {
 
         Lop lop = lopRepository.findById(request.getIdLop())
                 .orElseThrow(() -> new BusinessException("Không tìm thấy lớp học"));
+
+        Lop lopChuNhiem = null;
+        if (request.getIdLopChuNhiem() != null && !request.getIdLopChuNhiem().trim().isEmpty()) {
+            lopChuNhiem = lopRepository.findById(request.getIdLopChuNhiem())
+                    .orElseThrow(() -> new BusinessException("Không tìm thấy lớp chủ nhiệm"));
+            
+            Optional<GiaoVien> existingChuNhiem = giaoVienRepository.findByLopChuNhiem_IdLop(lopChuNhiem.getIdLop());
+            if (existingChuNhiem.isPresent() && !existingChuNhiem.get().getIdGiaoVien().equals(idGiaoVien)) {
+                throw new BusinessException("Lớp " + lopChuNhiem.getTenLop() + " đã có giáo viên chủ nhiệm khác: " + existingChuNhiem.get().getTaiKhoan().getTen());
+            }
+        }
 
         MonHoc monHoc = null;
         if (request.getIdMonHoc() != null && !request.getIdMonHoc().trim().isEmpty()) {
@@ -190,6 +214,7 @@ public class SystemAdminController {
         taiKhoanRepository.save(tk);
 
         gv.setLop(lop);
+        gv.setLopChuNhiem(lopChuNhiem);
         gv.setMonHoc(monHoc);
         gv = giaoVienRepository.save(gv);
 
@@ -319,15 +344,17 @@ public class SystemAdminController {
                 .orElseThrow(() -> new BusinessException("Khong tim thay hoc ky"));
 
         // Check if exists
-        boolean exists = phanCongGiangDayRepository.existsByGiaoVien_TaiKhoan_IdTaiKhoanAndLop_IdLopAndMonHoc_IdMonHocAndHocKy_IdHocKy(
-                gv.getTaiKhoan().getIdTaiKhoan(), lop.getIdLop(), mon.getIdMonHoc(), hk.getIdHocKy()
+        boolean exists = phanCongGiangDayRepository.existsByLop_IdLopAndMonHoc_IdMonHocAndHocKy_IdHocKy(
+                lop.getIdLop(), mon.getIdMonHoc(), hk.getIdHocKy()
         );
         if (exists) {
-            throw new BusinessException("Phan cong giang day da ton tai");
+            throw new BusinessException("Môn học " + mon.getTenMonHoc() + " tại lớp " + lop.getTenLop() + " trong học kỳ đã chọn đã được phân công cho giáo viên khác.");
         }
 
+        String newId = String.format("PC_%s_%s_%s_%s", gv.getIdGiaoVien(), lop.getIdLop(), mon.getIdMonHoc(), hk.getIdHocKy());
+
         PhanCongGiangDay pc = PhanCongGiangDay.builder()
-                .idPhanCong(UUID.randomUUID().toString())
+                .idPhanCong(newId)
                 .giaoVien(gv)
                 .lop(lop)
                 .monHoc(mon)
@@ -335,6 +362,12 @@ public class SystemAdminController {
                 .build();
 
         PhanCongGiangDay saved = phanCongGiangDayRepository.save(pc);
+
+        if (gv.getMonHoc() == null) {
+            gv.setMonHoc(mon);
+            giaoVienRepository.save(gv);
+        }
+
         return ResponseEntity.ok(mapToPhanCongResponse(saved));
     }
 
@@ -362,6 +395,8 @@ public class SystemAdminController {
                 .gioiTinh(gv.getTaiKhoan().getGioiTinh() != null ? gv.getTaiKhoan().getGioiTinh() : "")
                 .idLop(gv.getLop().getIdLop())
                 .tenLop(gv.getLop().getTenLop())
+                .idLopChuNhiem(gv.getLopChuNhiem() != null ? gv.getLopChuNhiem().getIdLop() : "")
+                .tenLopChuNhiem(gv.getLopChuNhiem() != null ? gv.getLopChuNhiem().getTenLop() : "Không")
                 .idMonHoc(gv.getMonHoc() != null ? gv.getMonHoc().getIdMonHoc() : "")
                 .tenMonHoc(gv.getMonHoc() != null ? gv.getMonHoc().getTenMonHoc() : "Chưa phân công")
                 .active(gv.getTaiKhoan().getActive() != null ? gv.getTaiKhoan().getActive() : true)

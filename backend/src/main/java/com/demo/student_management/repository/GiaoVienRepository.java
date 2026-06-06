@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface GiaoVienRepository extends JpaRepository<GiaoVien, String> {
     Optional<GiaoVien> findByTaiKhoan_IdTaiKhoan(String idTaiKhoan);
+    Optional<GiaoVien> findByLopChuNhiem_IdLop(String idLop);
 }

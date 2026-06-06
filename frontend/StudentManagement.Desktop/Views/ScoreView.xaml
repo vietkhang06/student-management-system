@@ -337,8 +337,8 @@
                                             Width="*"
                                             IsReadOnly="True"/>
 
-                        <!-- Điểm 15' (editable) -->
-                        <DataGridTemplateColumn Header="Điểm 15'" Width="100" HeaderStyle="{StaticResource CenteredHeader}">
+                        <!-- Điểm thường xuyên (editable) -->
+                        <DataGridTemplateColumn Header="Điểm thường xuyên" Width="150" HeaderStyle="{StaticResource CenteredHeader}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBox Text="{Binding Diem15, UpdateSourceTrigger=PropertyChanged}"
@@ -349,11 +349,23 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <!-- Điểm 1 tiết (editable) -->
-                        <DataGridTemplateColumn Header="Điểm 1 tiết" Width="100" HeaderStyle="{StaticResource CenteredHeader}">
+                        <!-- Điểm một tiết (editable) -->
+                        <DataGridTemplateColumn Header="Điểm một tiết" Width="110" HeaderStyle="{StaticResource CenteredHeader}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBox Text="{Binding Diem45, UpdateSourceTrigger=PropertyChanged}"
+                                             IsReadOnly="{Binding DataContext.IsReadOnlyScores, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                             Style="{StaticResource ScoreBox}"
+                                             HorizontalAlignment="Center"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- Điểm cuối kỳ (editable) -->
+                        <DataGridTemplateColumn Header="Điểm cuối kỳ" Width="110" HeaderStyle="{StaticResource CenteredHeader}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding DiemCk, UpdateSourceTrigger=PropertyChanged}"
                                              IsReadOnly="{Binding DataContext.IsReadOnlyScores, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                              Style="{StaticResource ScoreBox}"
                                              HorizontalAlignment="Center"/>
@@ -375,7 +387,7 @@
                         </DataGridTemplateColumn>
 
                         <!-- Save / Status -->
-                        <DataGridTemplateColumn Header="Lưu" Width="280">
+                        <DataGridTemplateColumn Header="Lưu" Width="220">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0">

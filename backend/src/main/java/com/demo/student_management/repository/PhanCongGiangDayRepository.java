@@ -23,5 +23,9 @@ public interface PhanCongGiangDayRepository extends JpaRepository<PhanCongGiangD
             String idTaiKhoan, String idLop, String idMonHoc, String idHocKy
     );
 
+    boolean existsByLop_IdLopAndMonHoc_IdMonHocAndHocKy_IdHocKy(
+            String idLop, String idMonHoc, String idHocKy
+    );
+
     boolean existsByMonHoc_IdMonHoc(String idMonHoc);
 }

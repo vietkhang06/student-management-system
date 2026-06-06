@@ -10,5 +10,6 @@ public class DiemResponse
     public string IdHocKy { get; set; } = string.Empty;
     public decimal? Diem15 { get; set; }
     public decimal? Diem45 { get; set; }
+    public decimal? DiemCk { get; set; }
     public decimal? DiemTb { get; set; }
 }

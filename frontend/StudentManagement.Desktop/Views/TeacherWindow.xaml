@@ -148,15 +148,18 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                            <TextBlock Text="Lớp công tác / Chủ nhiệm *" Style="{StaticResource LabelStyle}"/>
+                            <TextBlock Text="Lớp công tác *" Style="{StaticResource LabelStyle}"/>
                             <ComboBox x:Name="CboClass" Style="{StaticResource FormCombo}" DisplayMemberPath="TenLop"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                            <TextBlock Text="Môn giảng dạy" Style="{StaticResource LabelStyle}"/>
-                            <ComboBox x:Name="CboSubject" Style="{StaticResource FormCombo}" DisplayMemberPath="TenMonHoc"/>
+                            <TextBlock Text="Lớp chủ nhiệm" Style="{StaticResource LabelStyle}"/>
+                            <ComboBox x:Name="CboHomeroomClass" Style="{StaticResource FormCombo}" DisplayMemberPath="TenLop"/>
                         </StackPanel>
                     </Grid>
+
+                    <TextBlock Text="Môn giảng dạy" Style="{StaticResource LabelStyle}"/>
+                    <ComboBox x:Name="CboSubject" Style="{StaticResource FormCombo}" DisplayMemberPath="TenMonHoc"/>
 
                     <CheckBox x:Name="ChkActive" Content="Kích hoạt hoạt động" FontWeight="SemiBold" Foreground="#1E293B" IsChecked="True" Margin="0,4,0,12"/>
                 </StackPanel>

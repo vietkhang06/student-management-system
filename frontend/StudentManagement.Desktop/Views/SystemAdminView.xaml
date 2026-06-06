@@ -230,7 +230,7 @@
             <TextBlock Text="{Binding StatusMessage}"
                        FontSize="13" FontWeight="SemiBold"
                        Foreground="#64748B"
-                       Visibility="{Binding StatusMessage, Converter={StaticResource BoolVis}}"/>
+                       Visibility="{Binding HasStatusMessage, Converter={StaticResource BoolVis}}"/>
         </Grid>
 
         <!-- ── Navigation Tabs ────────────────────────────────────────── -->

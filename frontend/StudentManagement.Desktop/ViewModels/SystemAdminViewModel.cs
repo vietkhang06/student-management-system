@@ -47,7 +47,10 @@ public sealed partial class SystemAdminViewModel : ObservableObject
     private bool _isLoading;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasStatusMessage))]
     private string _statusMessage = string.Empty;
+
+    public bool HasStatusMessage => !string.IsNullOrEmpty(StatusMessage);
 
     // ── Search & Filter ───────────────────────────────────────────────────
     [ObservableProperty]

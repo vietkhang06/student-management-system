@@ -17,6 +17,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
+@org.springframework.transaction.annotation.Transactional
 public class SystemAdminController {
 
     private final HocSinhRepository hocSinhRepository;

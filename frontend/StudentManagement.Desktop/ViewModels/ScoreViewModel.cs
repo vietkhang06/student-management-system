@@ -83,7 +83,10 @@ public sealed partial class ScoreViewModel : ObservableObject
     private bool _isLoadingScores;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasStatusMessage))]
     private string _statusMessage = string.Empty;
+
+    public bool HasStatusMessage => !string.IsNullOrEmpty(StatusMessage);
 
     [ObservableProperty]
     private bool _hasScores;

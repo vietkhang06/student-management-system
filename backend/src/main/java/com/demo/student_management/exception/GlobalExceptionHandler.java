@@ -26,6 +26,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleOther(Exception ex) {
+        ex.printStackTrace(); // Added for debugging
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                 "message", "Loi he thong",
                 "detail", ex.getMessage()

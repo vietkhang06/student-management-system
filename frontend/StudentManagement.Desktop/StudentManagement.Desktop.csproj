@@ -1,6 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <None Remove="Images\logo_student_management.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\StudentManagement.Shared\StudentManagement.Shared.csproj" />
   </ItemGroup>
 
@@ -23,6 +27,7 @@
 
   <ItemGroup>
     <Resource Include="Images\login_logo.png" />
+    <Resource Include="Images\logo_student_management.png" />
   </ItemGroup>
 
 </Project>

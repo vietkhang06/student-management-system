@@ -54,7 +54,10 @@ public sealed partial class ReportViewModel : ObservableObject
     private bool _isLoadingReport;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasStatusMessage))]
     private string _statusMessage = string.Empty;
+
+    public bool HasStatusMessage => !string.IsNullOrEmpty(StatusMessage);
 
     // ── Subject Report results ────────────────────────────────────────────────
     [ObservableProperty]

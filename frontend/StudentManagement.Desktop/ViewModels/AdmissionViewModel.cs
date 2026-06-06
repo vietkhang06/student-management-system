@@ -47,7 +47,10 @@ public sealed partial class AdmissionViewModel : ObservableObject
     private bool _isBusy;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasStatusMessage))]
     private string _statusMessage = string.Empty;
+
+    public bool HasStatusMessage => !string.IsNullOrEmpty(StatusMessage);
 
     [ObservableProperty]
     private bool _isSuccess;

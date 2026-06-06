@@ -265,7 +265,7 @@
                    FontWeight="SemiBold"
                    Foreground="#64748B"
                    Margin="0,0,0,12"
-                   Visibility="{Binding StatusMessage, Converter={StaticResource BoolVis}}"/>
+                   Visibility="{Binding HasStatusMessage, Converter={StaticResource BoolVis}}"/>
 
         <!-- ── Score Table ─────────────────────────────────────────────── -->
         <Border Grid.Row="3"

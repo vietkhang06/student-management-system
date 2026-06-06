@@ -46,7 +46,10 @@ public sealed partial class RegulationViewModel : ObservableObject
     private bool _isLoading;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasStatusMessage))]
     private string _statusMessage = string.Empty;
+
+    public bool HasStatusMessage => !string.IsNullOrEmpty(StatusMessage);
 
     public ObservableCollection<RegulationRowItem> Regulations { get; } = new();
 

@@ -32,9 +32,9 @@ public class HocSinhController {
         if (authorizationService.isBanQuanLy()) {
             return all;
         }
-        java.util.Set<String> assignedClassIds = authorizationService.getAssignedClassIdsForCurrentTeacher();
+        String homeroomClassId = authorizationService.getAssignedClassIdForCurrentTeacher().orElse("");
         return all.stream()
-                .filter(hs -> assignedClassIds.contains(hs.getIdLop()))
+                .filter(hs -> homeroomClassId.equals(hs.getIdLop()))
                 .toList();
     }
 
@@ -53,9 +53,9 @@ public class HocSinhController {
         if (authorizationService.isBanQuanLy()) {
             return searchResults;
         }
-        java.util.Set<String> assignedClassIds = authorizationService.getAssignedClassIdsForCurrentTeacher();
+        String homeroomClassId = authorizationService.getAssignedClassIdForCurrentTeacher().orElse("");
         return searchResults.stream()
-                .filter(hs -> assignedClassIds.contains(hs.getIdLop()))
+                .filter(hs -> homeroomClassId.equals(hs.getIdLop()))
                 .toList();
     }
 
@@ -65,9 +65,9 @@ public class HocSinhController {
         if (authorizationService.isBanQuanLy()) {
             return summaries;
         }
-        java.util.Set<String> assignedClassIds = authorizationService.getAssignedClassIdsForCurrentTeacher();
+        String homeroomClassId = authorizationService.getAssignedClassIdForCurrentTeacher().orElse("");
         return summaries.stream()
-                .filter(hs -> assignedClassIds.contains(hs.getIdLop()))
+                .filter(hs -> homeroomClassId.equals(hs.getIdLop()))
                 .toList();
     }
 

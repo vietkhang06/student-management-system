@@ -552,7 +552,7 @@
                                     </Style>
                                 </TextBox.Resources>
                             </TextBox>
-                            <TextBlock Text="💡 Gõ để tìm theo tên, mã, email, sđt..." VerticalAlignment="Center" FontSize="12" Foreground="#94A3B8" Margin="12,0,0,0"/>
+                            <TextBlock Text="💡 Gõ để tìm theo tên, mã, email,.." VerticalAlignment="Center" FontSize="12" Foreground="#94A3B8" Margin="12,0,0,0"/>
                         </StackPanel>
 
                         <Button Content="+ Thêm giáo viên"
@@ -598,18 +598,18 @@
                                     </DataGridTextColumn.ElementStyle>
                                 </DataGridTextColumn>
 
-                                <!-- Email -->
-                                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*">
+                                <!-- Họ tên -->
+                                <DataGridTextColumn Header="Họ tên" Binding="{Binding TenGiaoVien}" Width="*">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
-                                            <Setter Property="Foreground" Value="#475569"/>
+                                            <Setter Property="Foreground" Value="#0F172A"/>
                                             <Setter Property="VerticalAlignment" Value="Center"/>
                                         </Style>
                                     </DataGridTextColumn.ElementStyle>
                                 </DataGridTextColumn>
 
                                 <!-- Subject -->
-                                <DataGridTextColumn Header="Môn giảng dạy" Binding="{Binding TenMonHoc}" Width="150">
+                                <DataGridTextColumn Header="Môn" Binding="{Binding TenMonHoc}" Width="130">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Foreground" Value="#0F172A"/>
@@ -619,7 +619,7 @@
                                 </DataGridTextColumn>
 
                                 <!-- Class -->
-                                <DataGridTextColumn Header="Lớp công tác" Binding="{Binding TenLop}" Width="120">
+                                <DataGridTextColumn Header="Lớp công tác" Binding="{Binding TenLop}" Width="130">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Foreground" Value="#0F172A"/>
@@ -629,7 +629,7 @@
                                 </DataGridTextColumn>
 
                                 <!-- Homeroom Class -->
-                                <DataGridTextColumn Header="Lớp chủ nhiệm" Binding="{Binding TenLopChuNhiem}" Width="120">
+                                <DataGridTextColumn Header="Lớp chủ nhiệm" Binding="{Binding TenLopChuNhiem}" Width="150">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Foreground" Value="#0F172A"/>
@@ -638,46 +638,8 @@
                                     </DataGridTextColumn.ElementStyle>
                                 </DataGridTextColumn>
 
-                                <!-- Status -->
-                                <DataGridTemplateColumn Header="Trạng thái" Width="120">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Border CornerRadius="12" Padding="8,4" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                                <Border.Style>
-                                                    <Style TargetType="Border">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Active}" Value="True">
-                                                                <Setter Property="Background" Value="#DCFCE7"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Active}" Value="False">
-                                                                <Setter Property="Background" Value="#FEE2E2"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Border.Style>
-                                                <TextBlock FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock">
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding Active}" Value="True">
-                                                                    <Setter Property="Text" Value="Hoạt động"/>
-                                                                    <Setter Property="Foreground" Value="#15803D"/>
-                                                                </DataTrigger>
-                                                                <DataTrigger Binding="{Binding Active}" Value="False">
-                                                                    <Setter Property="Text" Value="Tạm khóa"/>
-                                                                    <Setter Property="Foreground" Value="#B91C1C"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                            </Border>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
                                 <!-- Actions -->
-                                <DataGridTemplateColumn Header="Hành động" Width="130">
+                                <DataGridTemplateColumn Header="Hành động" Width="160">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

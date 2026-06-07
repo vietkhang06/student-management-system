@@ -98,6 +98,12 @@ public partial class App : Application
             client.Timeout = TimeSpan.FromSeconds(15);
         }).AddHttpMessageHandler<AuthHeaderHandler>();
 
+        services.AddHttpClient<IHistoryApiClient, HistoryApiClient>((serviceProvider, client) =>
+        {
+            client.BaseAddress = serviceProvider.GetRequiredService<ApiClientOptions>().BaseAddress;
+            client.Timeout = TimeSpan.FromSeconds(15);
+        }).AddHttpMessageHandler<AuthHeaderHandler>();
+
         // ViewModels
         services.AddTransient<LoginViewModel>();
         services.AddSingleton<ShellViewModel>();
@@ -111,6 +117,7 @@ public partial class App : Application
         services.AddTransient<ReportViewModel>();
         services.AddTransient<RegulationViewModel>();
         services.AddTransient<SystemAdminViewModel>();
+        services.AddTransient<HistoryViewModel>();
 
         // Views
         services.AddTransient<LoginView>();
@@ -125,5 +132,6 @@ public partial class App : Application
         services.AddTransient<Views.ReportView>();
         services.AddTransient<Views.RegulationView>();
         services.AddTransient<Views.SystemAdminView>();
+        services.AddTransient<Views.HistoryView>();
     }
 }

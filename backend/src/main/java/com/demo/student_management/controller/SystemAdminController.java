@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
+import com.demo.student_management.service.LichSuHeThongService;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,6 +33,7 @@ public class SystemAdminController {
     private final TaiKhoanRepository taiKhoanRepository;
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
     private final ChiTietDiemRepository chiTietDiemRepository;
+    private final LichSuHeThongService lichSuHeThongService;
 
     @GetMapping("/overview")
     public ResponseEntity<SystemOverviewResponse> getOverview() {
@@ -164,6 +167,11 @@ public class SystemAdminController {
                 .build();
         gv = giaoVienRepository.save(gv);
 
+        lichSuHeThongService.log("Thêm giáo viên", String.format("Thêm giáo viên [%s - %s] dạy môn [%s], chủ nhiệm lớp [%s]", 
+                gv.getIdGiaoVien(), tk.getTen(), 
+                gv.getMonHoc() != null ? gv.getMonHoc().getTenMonHoc() : "Không", 
+                gv.getLopChuNhiem() != null ? gv.getLopChuNhiem().getTenLop() : "Không"));
+
         return ResponseEntity.ok(mapToGiaoVienResponse(gv));
     }
 
@@ -218,6 +226,11 @@ public class SystemAdminController {
         gv.setMonHoc(monHoc);
         gv = giaoVienRepository.save(gv);
 
+        lichSuHeThongService.log("Sửa giáo viên", String.format("Sửa thông tin giáo viên [%s - %s]. Dạy môn: %s, Chủ nhiệm: %s", 
+                gv.getIdGiaoVien(), tk.getTen(), 
+                gv.getMonHoc() != null ? gv.getMonHoc().getTenMonHoc() : "Không", 
+                gv.getLopChuNhiem() != null ? gv.getLopChuNhiem().getTenLop() : "Không"));
+
         return ResponseEntity.ok(mapToGiaoVienResponse(gv));
     }
 
@@ -246,6 +259,8 @@ public class SystemAdminController {
         TaiKhoan tk = gv.getTaiKhoan();
         giaoVienRepository.delete(gv);
         taiKhoanRepository.delete(tk);
+
+        lichSuHeThongService.log("Xóa giáo viên", String.format("Xóa giáo viên [%s - %s]", gv.getIdGiaoVien(), tk.getTen()));
 
         return ResponseEntity.ok().build();
     }

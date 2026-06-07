@@ -25,6 +25,8 @@ import java.util.List;
 
 import com.demo.student_management.entity.ThamSo;
 import com.demo.student_management.repository.ThamSoRepository;
+import com.demo.student_management.service.LichSuHeThongService;
+
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ public class HocSinhServiceImpl implements HocSinhService {
     private final LopRepository lopRepository;
     private final ChiTietDiemRepository chiTietDiemRepository;
     private final ThamSoRepository thamSoRepository;
+    private final LichSuHeThongService lichSuHeThongService;
 
     @Override
     @Transactional
@@ -92,6 +95,8 @@ public class HocSinhServiceImpl implements HocSinhService {
 
         lop.setSiSo((int) (siSoHienTai + 1));
         lopRepository.save(lop);
+
+        lichSuHeThongService.log("Thêm học sinh", String.format("Thêm học sinh [%s - %s] vào lớp [%s]", hocSinh.getIdHocSinh(), hocSinh.getTen(), lop.getTenLop()));
 
         return toResponse(hocSinh);
     }
@@ -218,6 +223,26 @@ public class HocSinhServiceImpl implements HocSinhService {
             hocSinh.setLop(newLop);
         }
 
+        StringBuilder details = new StringBuilder(String.format("Sửa học sinh [%s - %s]. ", hocSinh.getIdHocSinh(), request.getTen()));
+        if (!oldLop.getIdLop().equals(newLop.getIdLop())) {
+            details.append(String.format("Chuyển lớp: %s -> %s. ", oldLop.getTenLop(), newLop.getTenLop()));
+        }
+        if (!hocSinh.getTen().equals(request.getTen())) {
+            details.append(String.format("Họ tên: %s -> %s. ", hocSinh.getTen(), request.getTen()));
+        }
+        if (!hocSinh.getGioiTinh().equals(request.getGioiTinh())) {
+            details.append(String.format("Giới tính: %s -> %s. ", hocSinh.getGioiTinh(), request.getGioiTinh()));
+        }
+        if (!hocSinh.getNgaySinh().equals(request.getNgaySinh())) {
+            details.append(String.format("Ngày sinh: %s -> %s. ", hocSinh.getNgaySinh(), request.getNgaySinh()));
+        }
+        if (!hocSinh.getDiaChi().equals(request.getDiaChi())) {
+            details.append(String.format("Địa chỉ: %s -> %s. ", hocSinh.getDiaChi(), request.getDiaChi()));
+        }
+        if ((hocSinh.getEmail() != null && !hocSinh.getEmail().equals(request.getEmail())) || (hocSinh.getEmail() == null && request.getEmail() != null)) {
+            details.append(String.format("Email: %s -> %s. ", hocSinh.getEmail(), request.getEmail()));
+        }
+
         hocSinh.setTen(request.getTen());
         hocSinh.setGioiTinh(request.getGioiTinh());
         hocSinh.setNgaySinh(request.getNgaySinh());
@@ -234,6 +259,8 @@ public class HocSinhServiceImpl implements HocSinhService {
             newLop.setSiSo((int) hocSinhRepository.countByLop_IdLop(newLop.getIdLop()));
             lopRepository.save(newLop);
         }
+
+        lichSuHeThongService.log("Sửa học sinh", details.toString());
 
         return toResponse(hocSinh);
     }
@@ -257,6 +284,8 @@ public class HocSinhServiceImpl implements HocSinhService {
             lop.setSiSo((int) hocSinhRepository.countByLop_IdLop(lop.getIdLop()));
             lopRepository.save(lop);
         }
+
+        lichSuHeThongService.log("Xóa học sinh", String.format("Xóa học sinh [%s - %s] khỏi lớp [%s]", hocSinh.getIdHocSinh(), hocSinh.getTen(), lop != null ? lop.getTenLop() : "Không"));
     }
 
     @Override

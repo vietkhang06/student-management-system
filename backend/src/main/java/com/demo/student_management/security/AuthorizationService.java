@@ -99,18 +99,30 @@ public class AuthorizationService {
         throw new AccessDeniedException("Khong co quyen truy cap lop nay");
     }
 
+
     public void requireCanAccessScoreScope(String idLop, String idMonHoc) {
         if (isBanQuanLy()) {
             return;
         }
         AuthenticatedUser user = requireAuthenticatedUser();
+
+        // 1. Is homeroom teacher for this class?
+        boolean isHomeroom = getAssignedClassIdForCurrentTeacher()
+                .map(idLop::equals)
+                .orElse(false);
+        if (isHomeroom) {
+            return;
+        }
+
+        // 2. Is assigned to teach this subject in this class
         boolean hasAssignment = phanCongGiangDayRepository
                 .existsByGiaoVien_TaiKhoan_IdTaiKhoanAndLop_IdLopAndMonHoc_IdMonHoc(
                         user.idTaiKhoan(), idLop, idMonHoc
                 );
-        if (!hasAssignment) {
-            throw new AccessDeniedException("Khong co quyen truy cap diem cho lop va mon hoc nay");
+        if (hasAssignment) {
+            return;
         }
+        throw new AccessDeniedException("Khong co quyen truy cap diem cho lop va mon hoc nay");
     }
 
     public void requireCanViewScoreScope(String idLop, String idMonHoc, String idHocKy) {

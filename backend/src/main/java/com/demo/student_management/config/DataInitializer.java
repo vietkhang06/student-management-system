@@ -45,15 +45,22 @@ public class DataInitializer implements CommandLineRunner {
         seedTeacher("gv01", "Gv@123456", "Le Thi Mai", "L001", "GV001", "MH001");
         seedTeacher("gv02", "Gv@123456", "Tran Van Nam", "L002", "GV002", "MH002");
 
-        // Seed teaching assignments: GV001 for L001, GV002 for L002 for all subjects & terms
-        for (int i = 1; i <= 9; i++) {
-            String idMonHoc = String.format("MH%03d", i);
-            seedAssignment("GV001", "L001", idMonHoc, "HKI");
-            seedAssignment("GV001", "L001", idMonHoc, "HKII");
-
-            seedAssignment("GV002", "L002", idMonHoc, "HKI");
-            seedAssignment("GV002", "L002", idMonHoc, "HKII");
+        // Clean up any incorrect assignments from old DataInitializer code
+        for (PhanCongGiangDay pc : phanCongGiangDayRepository.findAll()) {
+            if (pc.getGiaoVien() != null && pc.getMonHoc() != null) {
+                if ("GV001".equals(pc.getGiaoVien().getIdGiaoVien()) && !"MH001".equals(pc.getMonHoc().getIdMonHoc())) {
+                    phanCongGiangDayRepository.delete(pc);
+                } else if ("GV002".equals(pc.getGiaoVien().getIdGiaoVien()) && !"MH002".equals(pc.getMonHoc().getIdMonHoc())) {
+                    phanCongGiangDayRepository.delete(pc);
+                }
+            }
         }
+
+        // Seed correct teaching assignments matching the teacher's subject: GV001 for L001 (math), GV002 for L002 (literature)
+        seedAssignment("GV001", "L001", "MH001", "HKI");
+        seedAssignment("GV001", "L001", "MH001", "HKII");
+        seedAssignment("GV002", "L002", "MH002", "HKI");
+        seedAssignment("GV002", "L002", "MH002", "HKII");
     }
 
     private void seedLop(String idLop, String tenLop) {

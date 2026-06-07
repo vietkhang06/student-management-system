@@ -8,6 +8,7 @@ import com.demo.student_management.repository.*;
 import com.demo.student_management.service.DiemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.demo.student_management.service.LichSuHeThongService;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -23,6 +24,7 @@ public class DiemServiceImpl implements DiemService {
     private final HocSinhRepository hocSinhRepository;
     private final MonHocRepository monHocRepository;
     private final HocKyRepository hocKyRepository;
+    private final LichSuHeThongService lichSuHeThongService;
 
     @Override
     public DiemResponse save(DiemCreateRequest request) {
@@ -50,6 +52,34 @@ public class DiemServiceImpl implements DiemService {
                 request.getIdHocKy()
         );
 
+        java.util.Optional<ChiTietDiem> existingOpt = chiTietDiemRepository.findById(id);
+        String details;
+        if (existingOpt.isPresent()) {
+            ChiTietDiem existing = existingOpt.get();
+            details = String.format("Cập nhật điểm môn [%s] học kỳ [%s] cho học sinh [%s - %s]. Chi tiết: Thường xuyên: %s -> %s, Một tiết: %s -> %s, Cuối kỳ: %s -> %s",
+                    monHoc.getTenMonHoc(),
+                    hocKy.getTenHocKy(),
+                    hocSinh.getIdHocSinh(),
+                    hocSinh.getTen(),
+                    existing.getDiem15() != null ? existing.getDiem15() : "Chưa có",
+                    request.getDiem15(),
+                    existing.getDiem45() != null ? existing.getDiem45() : "Chưa có",
+                    request.getDiem45(),
+                    existing.getDiemCk() != null ? existing.getDiemCk() : "Chưa có",
+                    request.getDiemCk()
+            );
+        } else {
+            details = String.format("Nhập mới điểm môn [%s] học kỳ [%s] cho học sinh [%s - %s]. Chi tiết: Thường xuyên: %s, Một tiết: %s, Cuối kỳ: %s",
+                    monHoc.getTenMonHoc(),
+                    hocKy.getTenHocKy(),
+                    hocSinh.getIdHocSinh(),
+                    hocSinh.getTen(),
+                    request.getDiem15(),
+                    request.getDiem45(),
+                    request.getDiemCk()
+            );
+        }
+
         ChiTietDiem entity = ChiTietDiem.builder()
                 .id(id)
                 .hocSinh(hocSinh)
@@ -62,6 +92,8 @@ public class DiemServiceImpl implements DiemService {
                 .build();
 
         chiTietDiemRepository.save(entity);
+
+        lichSuHeThongService.log("Cập nhật điểm", details);
 
         return new DiemResponse(
                 request.getIdHocSinh(),

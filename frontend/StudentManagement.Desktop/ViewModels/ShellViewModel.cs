@@ -32,6 +32,25 @@ public partial class ShellViewModel : ObservableObject
     public string TenDangNhap => CurrentUser?.TenDangNhap ?? string.Empty;
     public string VaiTro => CurrentUser?.LoaiTaiKhoan ?? string.Empty;
     public string TenNguoiDung => _userSessionService.Profile?.Ten ?? TenDangNhap;
+    
+    public string Initials
+    {
+        get
+        {
+            string name = TenNguoiDung;
+            if (string.IsNullOrWhiteSpace(name)) return "U";
+            var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length > 0)
+            {
+                string initials = parts.Length == 1 
+                    ? parts[0][0].ToString() 
+                    : parts[0][0].ToString() + parts[parts.Length - 1][0].ToString();
+                return initials.ToUpper();
+            }
+            return "U";
+        }
+    }
+
     public string VaiTroHienThi => string.Equals(VaiTro, "BANQUANLY", StringComparison.OrdinalIgnoreCase) ? "Ban Quản Lý" : "Giáo Viên";
     public bool IsBanQuanLy => CurrentUser?.IsBanQuanLy == true;
     public bool IsGiaoVien => CurrentUser?.IsGiaoVien == true;
@@ -89,6 +108,12 @@ public partial class ShellViewModel : ObservableObject
     public void NavigateToSystemAdmin()
     {
         CurrentPageViewModel = _serviceProvider.GetRequiredService<SystemAdminViewModel>();
+    }
+
+    [RelayCommand]
+    public void NavigateToHistory()
+    {
+        CurrentPageViewModel = _serviceProvider.GetRequiredService<HistoryViewModel>();
     }
 
     [RelayCommand]
